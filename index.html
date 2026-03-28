@@ -4,802 +4,612 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Import Control — Bakery Operations Platform</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥐</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; -webkit-font-smoothing: antialiased; }
-body { font-family: 'DM Sans', sans-serif; background: linear-gradient(180deg, #FFFDF7 0%, #FEF9EE 100%); color: #3D2E0A; min-height: 100vh; }
-input, select, textarea, button { font-family: inherit; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb { background: #D9D3C7; border-radius: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-table { border-spacing: 0; }
-a { color: inherit; text-decoration: none; }
-
-/* ─── CSS VARIABLES ─── */
-:root {
-  --cream-50: #FFFDF7; --cream-100: #FEF9EE; --cream-200: #FDF0D5;
-  --amber-300: #F0C75E; --amber-400: #D4A843; --amber-hover: #C49A36;
-  --brown-500: #8B6914; --brown-600: #6B4F10; --brown-800: #3D2E0A;
-  --espresso: #2C1810;
-  --green: #6B9B37; --blue: #5B8FB9; --red: #B94A3F; --orange: #C67B3C;
-  --gray: #B8B0A2; --muted: #A0936F; --label: #8B7A5E;
-  --border: #F0E8D8; --input-border: #E8E0D0; --input-bg: #FEFCF6;
-  --shadow-sm: 0 2px 8px rgba(60,46,10,0.05);
-  --shadow-md: 0 4px 16px rgba(60,46,10,0.08);
-  --shadow-lg: 0 8px 24px rgba(60,46,10,0.12);
-  --radius: 12px; --radius-sm: 8px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#FFFDF7,#FEF9EE);color:#3D2E0A;min-height:100vh}
+input,select,textarea,button{font-family:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#D9D3C7;border-radius:3px}
+table{border-spacing:0}
+:root{
+--c50:#FFFDF7;--c100:#FEF9EE;--amber:#D4A843;--brown:#8B6914;--dk:#3D2E0A;
+--green:#6B9B37;--blue:#5B8FB9;--red:#B94A3F;--orange:#C67B3C;--gray:#B8B0A2;--muted:#A0936F;--label:#8B7A5E;
+--border:#F0E8D8;--iborder:#E8E0D0;--ibg:#FEFCF6;
+--shadow:0 2px 8px rgba(60,46,10,0.05);--shadow2:0 6px 20px rgba(60,46,10,0.10);
+--r:12px;--rs:8px;
 }
-
-/* ─── UTILITY CLASSES ─── */
-.card { background: var(--cream-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
-.card-alert { border-color: #E8C5C1; border-width: 1.5px; }
-.card-hover { transition: box-shadow 0.2s, transform 0.15s; cursor: pointer; }
-.card-hover:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.btn-primary { background: linear-gradient(135deg, #D4A843, #C49A36); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 20px; font-weight: 600; cursor: pointer; font-size: 13px; transition: opacity 0.15s; }
-.btn-primary:hover { opacity: 0.9; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-secondary { background: var(--input-bg); color: var(--brown-500); border: 1px solid var(--input-border); border-radius: var(--radius-sm); padding: 10px 20px; font-weight: 500; cursor: pointer; font-size: 13px; }
-.btn-danger { background: #FBEAE9; color: var(--red); border: 1px solid #E8C5C1; border-radius: var(--radius-sm); padding: 8px 16px; font-weight: 600; cursor: pointer; font-size: 12px; }
-.btn-icon { background: none; border: none; cursor: pointer; color: var(--red); font-size: 14px; padding: 2px; }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.2px; }
-.input-field { width: 100%; padding: 9px 12px; border: 1px solid var(--input-border); border-radius: var(--radius-sm); background: var(--input-bg); font-size: 13px; color: var(--brown-800); outline: none; }
-.input-field:focus { border-color: var(--amber-400); box-shadow: 0 0 0 2px rgba(212,168,67,0.15); }
-.label { font-size: 11px; color: var(--label); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
-.grid { display: grid; gap: 8px; }
-.grid-2 { grid-template-columns: 1fr 1fr; }
-.grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-.grid-auto { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 12px; }
-.wrap { flex-wrap: wrap; }
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-muted { color: var(--muted); }
-.text-success { color: var(--green); }
-.text-danger { color: var(--red); }
-.text-accent { color: var(--amber-400); }
-.font-display { font-family: 'DM Serif Display', serif; }
-.font-bold { font-weight: 700; }
-.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-/* ─── NAV ─── */
-.nav { background: var(--brown-800); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(60,46,10,0.15); }
-.nav-logo { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #F0C75E, #D4A843); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--brown-800); font-family: 'DM Serif Display', serif; }
-.nav-title { font-family: 'DM Serif Display', serif; font-size: 15px; color: #FEF9EE; }
-.nav-rate { font-size: 11px; color: var(--amber-400); }
-
-/* ─── TABS ─── */
-.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
-.tab-btn { padding: 9px 14px; font-size: 13px; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; margin-bottom: -2px; transition: color 0.15s; }
-.tab-btn.active { color: var(--brown-500); font-weight: 700; border-bottom-color: var(--amber-400); }
-.tab-count { margin-left: 4px; font-size: 10px; background: #EDE8DD; padding: 1px 6px; border-radius: 8px; }
-.tab-count.alert { background: #FBEAE9; color: var(--red); }
-
-/* ─── PROGRESS BAR ─── */
-.progress-track { background: #EDE8DD; border-radius: 6px; height: 6px; width: 100%; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
-
-/* ─── MODAL ─── */
-.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44,24,16,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
-.modal-content { background: var(--cream-50); border-radius: 16px; padding: 24px; max-width: 540px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 12px 40px rgba(60,46,10,0.2); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--brown-800); font-weight: 400; }
-.modal-close { background: none; border: none; font-size: 20px; color: var(--muted); cursor: pointer; }
-
-/* ─── TABLE ─── */
-.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.data-table th { text-align: left; padding: 7px 5px; color: var(--label); font-weight: 600; font-size: 10px; text-transform: uppercase; border-bottom: 2px solid var(--border); }
-.data-table td { padding: 7px 5px; border-bottom: 1px solid #F5F0E5; }
-.data-table tfoot td { border-top: 2px solid var(--amber-400); padding: 9px 5px; font-weight: 700; }
-
-/* ─── KPI CARD ─── */
-.kpi-card { padding: 13px 15px; }
-.kpi-label { font-size: 11px; color: var(--label); text-transform: uppercase; letter-spacing: 0.3px; }
-.kpi-value { font-size: 22px; font-weight: 700; font-family: 'DM Serif Display', serif; margin-top: 3px; }
-.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-/* ─── NOTIFICATION PANEL ─── */
-.notif-panel { position: absolute; right: 0; top: 30px; width: 280px; background: var(--cream-50); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-lg); padding: 6px; z-index: 200; max-height: 260px; overflow-y: auto; }
-.notif-badge { position: absolute; top: -4px; right: -6px; width: 15px; height: 15px; border-radius: 50%; background: var(--red); color: #fff; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-
-/* ─── RESPONSIVE ─── */
-@media (max-width: 600px) {
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .nav { padding: 10px 12px; }
-  main { padding: 12px 10px 40px !important; }
-  .kpi-value { font-size: 18px; }
-  .modal-content { padding: 16px; }
-}
+.card{background:var(--c50);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.card-a{border-color:#E8C5C1;border-width:1.5px}
+.card:hover .hov{box-shadow:var(--shadow2)}
+.btn{border:none;border-radius:var(--rs);padding:10px 20px;font-weight:600;cursor:pointer;font-size:13px;transition:opacity .15s}
+.btn-p{background:linear-gradient(135deg,#D4A843,#C49A36);color:#fff}
+.btn-s{background:var(--ibg);color:var(--brown);border:1px solid var(--iborder)}
+.btn-d{background:#FBEAE9;color:var(--red);border:1px solid #E8C5C1;padding:6px 14px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.inp{width:100%;padding:9px 12px;border:1px solid var(--iborder);border-radius:var(--rs);background:var(--ibg);font-size:13px;color:var(--dk);outline:none}
+.inp:focus{border-color:var(--amber);box-shadow:0 0 0 2px rgba(212,168,67,.15)}
+.lbl{font-size:11px;color:var(--label);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.fd{font-family:'DM Serif Display',serif}
+.nav{background:#3D2E0A;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(60,46,10,.15)}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px;overflow-x:auto}
+.tab{padding:9px 14px;font-size:13px;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;margin-bottom:-2px}
+.tab.on{color:var(--brown);font-weight:700;border-bottom-color:var(--amber)}
+.bar-t{background:#EDE8DD;border-radius:6px;overflow:hidden}
+.bar-f{height:100%;border-radius:6px;transition:width .5s}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,24,16,.4);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:var(--c50);border-radius:16px;padding:24px;max-width:540px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 12px 40px rgba(60,46,10,.2)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:7px 5px;color:var(--label);font-weight:600;font-size:10px;text-transform:uppercase;border-bottom:2px solid var(--border)}
+.tbl td{padding:7px 5px;border-bottom:1px solid #F5F0E5}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr!important}.nav{padding:10px 12px}main{padding:12px 10px 40px!important}}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'DM Sans',sans-serif"><div style="text-align:center"><div style="font-size:48px;margin-bottom:16px">🥐</div><div style="font-size:18px;color:#3D2E0A;font-family:'DM Serif Display',serif">Import Control</div><div style="font-size:13px;color:#A0936F;margin-top:8px">Загрузка платформы...</div></div></div></div>
 
-<script type="text/babel">
-// ════════════════════════════════════════════════════════════
-// IMPORT CONTROL PLATFORM — Standalone HTML Application
-// Supabase-ready: replace dataLayer methods with Supabase client
-// ════════════════════════════════════════════════════════════
+<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.0/babel.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 
-const { useState, useEffect, useMemo, useCallback, useRef } = React;
-const { BarChart, Bar: RBar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Legend } = Recharts;
+<script type="text/babel" data-type="module">
+const {useState,useEffect,useMemo,useCallback}=React;
+const {BarChart,Bar:RBar,XAxis,YAxis,Tooltip,ResponsiveContainer,PieChart,Pie,Cell,CartesianGrid,Legend}=Recharts;
 
-// ─── SUPABASE DATA LAYER (mock — replace with real Supabase) ──
-// To connect to Supabase:
-// 1. import { createClient } from '@supabase/supabase-js'
-// 2. const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-// 3. Replace dataLayer methods with supabase.from('table').select/insert/update/delete
+const FLAGS={shipments:1,stages:1,expenses_basic:1,deadlines:1,dashboard_import:1,risks:1,documents:1,scenarios:1,unit_economics:1,sales:1,returns:1,warehouse_detail:1,audit_log:1,approval_flow:1,forecasting:1};
 
-const dataLayer = {
-  // These will be replaced with Supabase calls
-  async getShipments() { return INIT_DATA; },
-  async getShipment(id) { return INIT_DATA.find(s => s.id === id); },
-  async createShipment(data) { /* supabase.from('shipments').insert(data) */ },
-  async updateShipment(id, data) { /* supabase.from('shipments').update(data).eq('id', id) */ },
-  async deleteShipment(id) { /* supabase.from('shipments').delete().eq('id', id) */ },
-  async getExchangeRates() { return EXCHANGE_HISTORY; },
-  // ... more methods per entity
-};
-
-// ─── FEATURE FLAGS ───────────────────────────────────────
-const FLAGS = {
-  shipments:true, stages:true, expenses_basic:true, deadlines:true,
-  dashboard_import:true, risks:true, documents:true, scenarios:true,
-  unit_economics:true, sales:true, returns:true, warehouse_detail:true,
-  audit_log:true, approval_flow:true, forecasting:true,
-};
-
-// ─── STAGE TEMPLATE ──────────────────────────────────────
-const STAGES = [
-  {name:"Подготовка поставки",ss:["Создание поставки","Назначение команды","Выбор ассортимента","Согласование объёмов","Согласование цен","Фиксация Incoterms","Фиксация валют","Черновой бюджет"]},
-  {name:"Закуп",ss:["Ввод заказа","Подтверждение заказа","Получение счёта","Фиксация цены","Фиксация курса","Аванс","Окончательная оплата","Подтверждение готовности"]},
-  {name:"Документы поставщика",ss:["Инвойс","Packing list","Контракт","Спецификация","Сертификат качества","Сертификат происхождения"]},
-  {name:"Логистика в Европе",ss:["Бронирование транспорта","Дата загрузки","Выбор перевозчика","Маршрут","Контроль загрузки","Фотофиксация"]},
-  {name:"Экспортное оформление",ss:["Подготовка документов","Подача","Получение разрешения"]},
-  {name:"Международная перевозка",ss:["Дата выезда","Контроль маршрута","Транзит","ETA","Отклонения"]},
-  {name:"Сертификация",ss:["Список документов","Подача","Получение","Замечания","Подтверждение"]},
-  {name:"Таможня",ss:["Декларация","ТН ВЭД","Пошлина","НДС","Сборы","Выпуск","Досмотр","Завершение"]},
-  {name:"Ввоз в КЗ",ss:["Граница","Транзит","Подтверждение"]},
-  {name:"Доставка до склада",ss:["Маршрут","Контроль","Прибытие"]},
-  {name:"Приёмка",ss:["Разгрузка","Сверка","Расхождения","Повреждения","Размещение","Фото","Ввод в остатки"]},
-  {name:"Подготовка к продаже",ss:["Маркировка","Сортировка","Ценообразование","Фото товара"]},
-  {name:"Запуск каналов",ss:["Выбор каналов","Ответственные","Лимиты","Цены"]},
-  {name:"Реализация",ss:["Мониторинг","Остатки","Возвраты"]},
+const STAGES=[
+{n:"Подготовка поставки",ss:["Создание","Команда","Ассортимент","Объёмы","Цены","Incoterms","Валюты","Бюджет"]},
+{n:"Закуп",ss:["Заказ","Подтверждение","Счёт","Цена","Курс","Аванс","Оплата","Готовность"]},
+{n:"Документы поставщика",ss:["Инвойс","Packing list","Контракт","Спецификация","Серт. качества","Серт. происх."]},
+{n:"Логистика ЕС",ss:["Транспорт","Дата загрузки","Перевозчик","Маршрут","Контроль","Фото"]},
+{n:"Экспорт",ss:["Документы","Подача","Разрешение"]},
+{n:"Перевозка",ss:["Выезд","Маршрут","Транзит","ETA","Отклонения"]},
+{n:"Сертификация",ss:["Документы","Подача","Получение","Замечания","Подтверждение"]},
+{n:"Таможня",ss:["Декларация","ТН ВЭД","Пошлина","НДС","Сборы","Выпуск","Досмотр","Завершение"]},
+{n:"Ввоз в КЗ",ss:["Граница","Транзит","Подтверждение"]},
+{n:"Доставка",ss:["Маршрут","Контроль","Прибытие"]},
+{n:"Приёмка",ss:["Разгрузка","Сверка","Расхождения","Повреждения","Размещение","Фото","Остатки"]},
+{n:"Подготовка к продаже",ss:["Маркировка","Сортировка","Цены","Фото"]},
+{n:"Запуск каналов",ss:["Каналы","Ответственные","Лимиты","Цены"]},
+{n:"Реализация",ss:["Мониторинг","Остатки","Возвраты"]}
 ];
+const ECATS=["Закуп товара","Упаковка","Логистика пост.","Межд. логистика","Страхование","Экспорт","Сертификация","Разрешения","Тамож. пошлина","НДС","Тамож. сборы","Брокер","Склад","Разгрузка","Сортировка","Маркировка","Доставка КЗ","Доп. расходы","Запуск продаж","Маркетинг","Возвраты","Админ."];
+const RCATS=["Валютный","Логистический","Документарный","Таможенный","Сертификационный","Складской","Коммерческий","Юридический","Срок годности","Канал сбыта","Репутационный"];
+const DTYPES=["Контракт","Инвойс","Packing list","Спецификация","Серт. качества","Серт. происхождения","Серт. ЕАЭС","Тамож. декларация","CMR","Накладная","Акт","Платёж","Фото","Иное"];
 
-const EXP_CATS = ["Закуп товара","Упаковка","Логистика поставщика","Международная логистика","Страхование","Экспорт","Сертификация","Разрешения","Таможенная пошлина","НДС","Тамож. сборы","Брокер","Склад","Разгрузка","Сортировка","Маркировка","Доставка по КЗ","Доп. расходы","Запуск продаж","Маркетинг","Возвраты/списания","Админ."];
-const RISK_CATS = ["Валютный","Логистический","Документарный","Таможенный","Сертификационный","Складской","Коммерческий","Юридический","Срок годности","Канал сбыта","Репутационный"];
-const DOC_TYPES = ["Контракт","Инвойс","Packing list","Спецификация","Сертификат качества","Сертификат происхождения","Серт. ЕАЭС","Тамож. декларация","CMR","Накладная","Складской акт","Акт расхождений","Платёжный","Разрешение","Фото","КП","Протокол","Иное"];
+const gid=()=>"i"+Math.random().toString(36).slice(2,9);
+const td=()=>new Date().toISOString().slice(0,10);
+const fm=n=>{if(n>=1e6)return(n/1e6).toFixed(1)+" млн";if(n>=1e3)return(n/1e3).toFixed(0)+" тыс";return String(n)};
+const ff=n=>new Intl.NumberFormat("ru-RU").format(n);
+const cp=st=>st.length?Math.round(st.reduce((a,s)=>a+s.p,0)/st.length):0;
+const co=t=>t.filter(x=>x.st==="overdue").length;
+const cr=r=>r.filter(x=>x.lv==="critical"&&x.st!=="closed").length;
 
-const EXCHANGE_HISTORY = [
-  {pair:"EUR/KZT",date:"2026-03-27",rate:531.20,source:"НБК",fixed:false},
-  {pair:"EUR/KZT",date:"2026-03-01",rate:530.40,source:"НБК",fixed:true},
-  {pair:"EUR/KZT",date:"2026-02-15",rate:528.90,source:"НБК",fixed:true},
-  {pair:"USD/KZT",date:"2026-03-27",rate:488.50,source:"НБК",fixed:false},
-  {pair:"USD/KZT",date:"2026-03-01",rate:487.10,source:"НБК",fixed:true},
-];
+const mkS=()=>STAGES.map((t,i)=>({id:gid(),o:i+1,n:t.n,st:"not_started",p:0,ss:t.ss.map((s,j)=>({id:gid(),n:s,done:false,mand:j<3}))}));
 
-// ─── HELPERS ─────────────────────────────────────────────
-const gid = () => "id-" + Math.random().toString(36).slice(2,10);
-const today = () => new Date().toISOString().slice(0,10);
-const fmt = n => { if(n>=1e6)return(n/1e6).toFixed(1)+" млн"; if(n>=1e3)return(n/1e3).toFixed(0)+" тыс"; return String(n); };
-const ff = n => new Intl.NumberFormat("ru-RU").format(n);
-const calcPct = st => st.length ? Math.round(st.reduce((a,s)=>a+s.pct,0)/st.length) : 0;
-const cntOD = t => t.filter(x=>x.status==="overdue").length;
-const cntCR = r => r.filter(x=>x.level==="critical"&&x.status!=="closed").length;
+const SC={draft:{l:"Черновик",c:"#B8B0A2",b:"#F5F3EF"},planning:{l:"Планирование",c:"#D4A843",b:"#FEF6E0"},in_progress:{l:"В работе",c:"#5B8FB9",b:"#EBF3FA"},completed:{l:"Завершено",c:"#6B9B37",b:"#F0F7E6"},not_started:{l:"Не начато",c:"#B8B0A2",b:"#F5F3EF"},overdue:{l:"Просрочено",c:"#B94A3F",b:"#FBEAE9"},pending:{l:"Ожидает",c:"#D4A843",b:"#FEF6E0"},open:{l:"Открыт",c:"#C67B3C",b:"#FEF3E8"},mitigating:{l:"Митигация",c:"#5B8FB9",b:"#EBF3FA"},closed:{l:"Закрыт",c:"#6B9B37",b:"#F0F7E6"},approved:{l:"Одобрено",c:"#6B9B37",b:"#F0F7E6"},paid:{l:"Оплачено",c:"#6B9B37",b:"#F0F7E6"},selling:{l:"Продажи",c:"#6B9B37",b:"#F0F7E6"},planned:{l:"Планируется",c:"#D4A843",b:"#FEF6E0"},uploaded:{l:"Загружен",c:"#5B8FB9",b:"#EBF3FA"},verified:{l:"Проверен",c:"#6B9B37",b:"#F0F7E6"}};
+const SG={completed:"#6B9B37",in_progress:"#5B8FB9",not_started:"#D9D3C7",overdue:"#B94A3F"};
+const RC2={critical:"#B94A3F",high:"#C67B3C",medium:"#D4A843",low:"#6B9B37"};
 
-const mkStages = () => STAGES.map((t,i) => ({
-  id:gid(), order:i+1, name:t.name, status:"not_started", pct:0,
-  plannedEnd:null, actualStart:null, actualEnd:null,
-  substages:t.ss.map((s,j)=>({id:gid(),name:s,completed:false,mandatory:j<3})),
-}));
+const D0=[{
+id:"SHP-2026-001",nm:"Круассаны & Багеты — Март 2026",fac:"Boulangerie Maison",sup:"EuroDistrib GmbH",
+st:"in_progress",dt:"2026-02-15",pP:"2026-03-01",pS:"2026-03-05",pA:"2026-03-18",aA:null,
+bP:14500000,bF:11200000,pal:12,resp:"Ержан К.",cur:"EUR",rate:530.4,inc:"FCA",tr:"Авторефрижератор",
+ca:"BY_PURCHASE_VALUE",
+stages:(()=>{const s=mkS();[0,1,2,3].forEach(i=>{s[i].st="completed";s[i].p=100;s[i].ss.forEach(x=>x.done=true)});s[4].st="in_progress";s[4].p=70;s[5].st="in_progress";s[5].p=40;s[6].st="in_progress";s[6].p=30;return s})(),
+items:[
+{id:gid(),sku:"CRO-001",nm:"Круассан сливочный",cat:"Круассаны",qty:6000,eur:0.85,wg:0.08,exp:"2026-06-01",pp:850,mg:42},
+{id:gid(),sku:"CRO-002",nm:"Круассан шоколадный",cat:"Круассаны",qty:4000,eur:0.95,wg:0.085,exp:"2026-06-01",pp:950,mg:38},
+{id:gid(),sku:"BAG-001",nm:"Багет классический",cat:"Багеты",qty:3000,eur:0.60,wg:0.30,exp:"2026-05-15",pp:650,mg:51},
+{id:gid(),sku:"BRI-001",nm:"Бриошь",cat:"Выпечка",qty:3000,eur:1.10,wg:0.10,exp:"2026-05-20",pp:1200,mg:35},
+{id:gid(),sku:"TRT-001",nm:"Тарт яблочный",cat:"Тарты",qty:2500,eur:1.45,wg:0.15,exp:"2026-05-10",pp:1500,mg:40},
+{id:gid(),sku:"ECL-001",nm:"Эклер ванильный",cat:"Эклеры",qty:2000,eur:1.20,wg:0.09,exp:"2026-04-30",pp:1350,mg:44},
+],
+exps:[
+{id:gid(),cat:"Закуп товара",pl:8500000,fc:8200000,cur:"EUR",st:"approved"},
+{id:gid(),cat:"Межд. логистика",pl:2200000,fc:1800000,cur:"EUR",st:"approved"},
+{id:gid(),cat:"Сертификация",pl:450000,fc:320000,cur:"KZT",st:"approved"},
+{id:gid(),cat:"Тамож. пошлина",pl:1200000,fc:0,cur:"KZT",st:"draft"},
+{id:gid(),cat:"НДС",pl:980000,fc:0,cur:"KZT",st:"draft"},
+{id:gid(),cat:"Брокер",pl:350000,fc:280000,cur:"KZT",st:"paid"},
+{id:gid(),cat:"Склад",pl:420000,fc:0,cur:"KZT",st:"draft"},
+{id:gid(),cat:"Доп. расходы",pl:400000,fc:600000,cur:"KZT",st:"approved"},
+],
+risks:[
+{id:gid(),nm:"Задержка серт. ЕАЭС",cat:"Сертификационный",lv:"critical",fi:850000,st:"open",mt:"Подготовить заранее"},
+{id:gid(),nm:"Курсовая разница",cat:"Валютный",lv:"medium",fi:400000,st:"mitigating",mt:"Зафиксировать курс"},
+],
+tasks:[
+{id:gid(),nm:"Packing list брокеру",dl:"2026-03-10",st:"overdue",rsp:"Ержан К.",pr:"high"},
+{id:gid(),nm:"Серт. происхождения",dl:"2026-03-12",st:"overdue",rsp:"Айгуль М.",pr:"critical"},
+{id:gid(),nm:"Слот на таможне",dl:"2026-03-20",st:"pending",rsp:"Ержан К.",pr:"medium"},
+],
+docs:[
+{id:gid(),tp:"Контракт",nm:"FR-2026-041",st:"verified",mand:true,ver:2,by:"Ержан К."},
+{id:gid(),tp:"Инвойс",nm:"INV-8834",st:"verified",mand:true,ver:2,by:"Айгуль М."},
+{id:gid(),tp:"Серт. ЕАЭС",nm:"EAEU-pending",st:"pending",mand:true,ver:0,by:null},
+{id:gid(),tp:"Тамож. декл.",nm:"TD-pending",st:"pending",mand:true,ver:0,by:null},
+],
+scen:{
+base:{rate:530.4,days:18,log:2200000,cust:2180000,def:.02,pace:.8,ret:.03,price:950,disc:5,wo:.01},
+opt:{rate:520,days:15,log:1900000,cust:2100000,def:.01,pace:1,ret:.01,price:1000,disc:3,wo:.005},
+str:{rate:560,days:25,log:2800000,cust:2400000,def:.05,pace:.5,ret:.08,price:800,disc:10,wo:.04}
+},
+wh:{nm:"Склад Алматы-1",ok:false,exp:20500,act:null,dmg:null,stk:[]},
+launch:{st:"not_ready",ch:false,pr:false,sd:false,dt:null},
+channels:[
+{id:gid(),nm:"Magnum",tp:"Сети",pri:1,st:"planned",geo:"Алматы",com:15,del:30,sP:4500000,sF:0},
+{id:gid(),nm:"Оптовик Central",tp:"Опт",pri:2,st:"planned",geo:"КЗ",com:8,del:14,sP:3200000,sF:0},
+{id:gid(),nm:"HoReCa",tp:"HoReCa",pri:3,st:"planned",geo:"Алматы",com:5,del:7,sP:1800000,sF:0},
+],
+audit:[
+{d:"2026-03-25 14:30",u:"Ержан К.",a:"Статус «Экспорт» → В работе"},
+{d:"2026-03-24 10:15",u:"Айгуль М.",a:"Загружен инвойс v2"},
+{d:"2026-03-20 11:20",u:"Ержан К.",a:"Создана поставка"},
+],
+}];
 
-// Status config
-const SC = {
-  draft:{l:"Черновик",c:"#B8B0A2",bg:"#F5F3EF"},planning:{l:"Планирование",c:"#D4A843",bg:"#FEF6E0"},
-  in_progress:{l:"В работе",c:"#5B8FB9",bg:"#EBF3FA"},completed:{l:"Завершено",c:"#6B9B37",bg:"#F0F7E6"},
-  not_started:{l:"Не начато",c:"#B8B0A2",bg:"#F5F3EF"},overdue:{l:"Просрочено",c:"#B94A3F",bg:"#FBEAE9"},
-  pending:{l:"Ожидает",c:"#D4A843",bg:"#FEF6E0"},open:{l:"Открыт",c:"#C67B3C",bg:"#FEF3E8"},
-  mitigating:{l:"Митигация",c:"#5B8FB9",bg:"#EBF3FA"},closed:{l:"Закрыт",c:"#6B9B37",bg:"#F0F7E6"},
-  approved:{l:"Одобрено",c:"#6B9B37",bg:"#F0F7E6"},paid:{l:"Оплачено",c:"#6B9B37",bg:"#F0F7E6"},
-  selling:{l:"Реализация",c:"#6B9B37",bg:"#F0F7E6"},planned:{l:"Планируется",c:"#D4A843",bg:"#FEF6E0"},
-  active:{l:"Активен",c:"#6B9B37",bg:"#F0F7E6"},uploaded:{l:"Загружен",c:"#5B8FB9",bg:"#EBF3FA"},
-  verified:{l:"Проверен",c:"#6B9B37",bg:"#F0F7E6"},rejected:{l:"Отклонён",c:"#B94A3F",bg:"#FBEAE9"},
-};
-const SGC = {completed:"#6B9B37",in_progress:"#5B8FB9",not_started:"#D9D3C7",overdue:"#B94A3F",blocked:"#8B2E2E"};
-const RC = {critical:"#B94A3F",high:"#C67B3C",medium:"#D4A843",low:"#6B9B37"};
-const PC = {critical:"#8B2E2E",high:"#B94A3F",medium:"#D4A843",low:"#6B9B37"};
+// ─── Components via createElement shorthand ──────────────
+const h=React.createElement;
+const Bg=({s})=>{const c=SC[s]||SC.not_started;return h("span",{className:"badge",style:{color:c.c,background:c.b}},c.l)};
+const Br=({p,c,ht=6})=>h("div",{className:"bar-t",style:{height:ht}},h("div",{className:"bar-f",style:{width:`${Math.min(p,100)}%`,background:c||"#6B9B37"}}));
+const Lb=({children})=>h("div",{className:"lbl"},children);
+const KP=({label,value,sub,color,alert})=>h("div",{className:`card ${alert?"card-a":""}`,style:{padding:"13px 15px"}},
+  h("div",{style:{display:"flex",justifyContent:"space-between"}},h("span",{className:"lbl"},label),alert&&h("span",{style:{color:"var(--red)",fontSize:12}},"⚠")),
+  h("div",{className:"fd",style:{fontSize:22,fontWeight:700,color:color||"var(--dk)",marginTop:3}},value),
+  sub&&h("div",{style:{fontSize:11,color:"var(--muted)",marginTop:2}},sub)
+);
 
-// ─── INITIAL DATA ────────────────────────────────────────
-const INIT_DATA = [
-  {
-    id:"SHP-2026-001",name:"Круассаны & Багеты — Март 2026",
-    factory:"Boulangerie Maison (Франция)",supplier:"EuroDistrib GmbH",
-    status:"in_progress",createdAt:"2026-02-15",
-    plannedPurchase:"2026-03-01",plannedShipment:"2026-03-05",
-    plannedArrival:"2026-03-18",actualArrival:null,
-    budgetPlan:14500000,budgetFact:11200000,pallets:12,
-    responsible:"Ержан К.",currency:"EUR",exchangeRate:530.4,
-    incoterms:"FCA",transportType:"Авторефрижератор",
-    costAllocation:"BY_PURCHASE_VALUE",notes:"",
-    stages:(()=>{const st=mkStages();[0,1,2,3].forEach(i=>{st[i].status="completed";st[i].pct=100;st[i].substages.forEach(s=>s.completed=true);});st[4].status="in_progress";st[4].pct=70;st[5].status="in_progress";st[5].pct=40;st[6].status="in_progress";st[6].pct=30;return st;})(),
-    items:[
-      {id:gid(),sku:"CRO-001",name:"Круассан сливочный",category:"Круассаны",qty:6000,boxCount:300,priceEur:0.85,weightGross:0.08,expiryDate:"2026-06-01",plannedPrice:850,margin:42},
-      {id:gid(),sku:"CRO-002",name:"Круассан шоколадный",category:"Круассаны",qty:4000,boxCount:200,priceEur:0.95,weightGross:0.085,expiryDate:"2026-06-01",plannedPrice:950,margin:38},
-      {id:gid(),sku:"BAG-001",name:"Багет классический",category:"Багеты",qty:3000,boxCount:150,priceEur:0.60,weightGross:0.30,expiryDate:"2026-05-15",plannedPrice:650,margin:51},
-      {id:gid(),sku:"BRI-001",name:"Бриошь",category:"Выпечка",qty:3000,boxCount:150,priceEur:1.10,weightGross:0.10,expiryDate:"2026-05-20",plannedPrice:1200,margin:35},
-      {id:gid(),sku:"TRT-001",name:"Тарт яблочный",category:"Тарты",qty:2500,boxCount:125,priceEur:1.45,weightGross:0.15,expiryDate:"2026-05-10",plannedPrice:1500,margin:40},
-      {id:gid(),sku:"ECL-001",name:"Эклер ванильный",category:"Эклеры",qty:2000,boxCount:100,priceEur:1.20,weightGross:0.09,expiryDate:"2026-04-30",plannedPrice:1350,margin:44},
-    ],
-    expenses:[
-      {id:gid(),category:"Закуп товара",plan:8500000,fact:8200000,currency:"EUR",status:"approved"},
-      {id:gid(),category:"Международная логистика",plan:2200000,fact:1800000,currency:"EUR",status:"approved"},
-      {id:gid(),category:"Сертификация",plan:450000,fact:320000,currency:"KZT",status:"approved"},
-      {id:gid(),category:"Таможенная пошлина",plan:1200000,fact:0,currency:"KZT",status:"draft"},
-      {id:gid(),category:"НДС",plan:980000,fact:0,currency:"KZT",status:"draft"},
-      {id:gid(),category:"Брокер",plan:350000,fact:280000,currency:"KZT",status:"paid"},
-      {id:gid(),category:"Склад",plan:420000,fact:0,currency:"KZT",status:"draft"},
-      {id:gid(),category:"Доп. расходы",plan:400000,fact:600000,currency:"KZT",status:"approved"},
-    ],
-    risks:[
-      {id:gid(),name:"Задержка сертификации ЕАЭС",category:"Сертификационный",level:"critical",probability:4,impact:5,financialImpact:850000,status:"open",mitigation:"Подготовить заранее"},
-      {id:gid(),name:"Курсовая разница EUR/KZT",category:"Валютный",level:"medium",probability:3,impact:3,financialImpact:400000,status:"mitigating",mitigation:"Зафиксировать курс"},
-    ],
-    tasks:[
-      {id:gid(),name:"Отправить packing list брокеру",deadline:"2026-03-10",status:"overdue",responsible:"Ержан К.",priority:"high"},
-      {id:gid(),name:"Получить сертификат происхождения",deadline:"2026-03-12",status:"overdue",responsible:"Айгуль М.",priority:"critical"},
-      {id:gid(),name:"Забронировать слот на таможне",deadline:"2026-03-20",status:"pending",responsible:"Ержан К.",priority:"medium"},
-    ],
-    documents:[
-      {id:gid(),type:"Контракт",name:"Контракт №FR-2026-041",stageIdx:0,date:"2026-02-20",status:"verified",mandatory:true,version:2,uploadedBy:"Ержан К."},
-      {id:gid(),type:"Инвойс",name:"Invoice #INV-8834",stageIdx:1,date:"2026-03-01",status:"verified",mandatory:true,version:2,uploadedBy:"Айгуль М."},
-      {id:gid(),type:"Серт. ЕАЭС",name:"EAEU-pending",stageIdx:6,date:null,status:"pending",mandatory:true,version:0,uploadedBy:null},
-      {id:gid(),type:"Тамож. декларация",name:"TD-pending",stageIdx:7,date:null,status:"pending",mandatory:true,version:0,uploadedBy:null},
-    ],
-    scenarios:{
-      base:{exchangeRate:530.4,deliveryDays:18,logisticsCost:2200000,customsCost:2180000,defectRate:0.02,salesPace:0.8,returnRate:0.03,salePrice:950,discount:5,writeOffRate:0.01},
-      optimistic:{exchangeRate:520,deliveryDays:15,logisticsCost:1900000,customsCost:2100000,defectRate:0.01,salesPace:1.0,returnRate:0.01,salePrice:1000,discount:3,writeOffRate:0.005},
-      stress:{exchangeRate:560,deliveryDays:25,logisticsCost:2800000,customsCost:2400000,defectRate:0.05,salesPace:0.5,returnRate:0.08,salePrice:800,discount:10,writeOffRate:0.04},
-    },
-    warehouse:{name:"Склад Алматы-1",address:"ул. Логистическая 14",isConfirmed:false,expectedUnits:20500,actualUnits:null,damagedUnits:null,stock:[]},
-    launch:{status:"not_ready",channelsAssigned:false,pricesSet:false,stockDistributed:false,launchDate:null,notes:""},
-    channels:[
-      {id:gid(),name:"Magnum",type:"chain_store",priority:1,status:"planned",geography:"Алматы",commission:15,paymentDelay:30,salesPlan:4500000,salesFact:0},
-      {id:gid(),name:"Оптовик Central",type:"wholesale",priority:2,status:"planned",geography:"КЗ",commission:8,paymentDelay:14,salesPlan:3200000,salesFact:0},
-      {id:gid(),name:"HoReCa",type:"horeca",priority:3,status:"planned",geography:"Алматы",commission:5,paymentDelay:7,salesPlan:1800000,salesFact:0},
-    ],
-    approvals:[
-      {id:gid(),entity:"expense",entityId:"Закуп товара",action:"approve",requestedBy:"Ержан К.",approver:"Даурен",status:"approved",date:"2026-03-02"},
-      {id:gid(),entity:"stage",entityId:"Таможня",action:"close",requestedBy:"Ержан К.",approver:"Даурен",status:"pending",date:"2026-03-25",notes:"Ожидает"},
-    ],
-    audit:[
-      {date:"2026-03-25 14:30",user:"Ержан К.",action:"Статус «Экспорт» → В работе"},
-      {date:"2026-03-24 10:15",user:"Айгуль М.",action:"Загружен инвойс v2"},
-      {date:"2026-03-20 11:20",user:"Ержан К.",action:"Создана поставка SHP-2026-001"},
-    ],
-  },
-];
-
-// ─── ATOMS ───────────────────────────────────────────────
-const Badge = ({s}) => {const c=SC[s]||SC.not_started;return <span className="badge" style={{color:c.c,background:c.bg}}>{c.l}</span>;};
-const Prog = ({p,c,h=6}) => <div className="progress-track" style={{height:h}}><div className="progress-fill" style={{width:`${Math.min(p,100)}%`,background:c||"#6B9B37"}}/></div>;
-const Lbl = ({children}) => <div className="label">{children}</div>;
-
-function KPI({label,value,sub,color,alert}) {
-  return <div className={`card kpi-card ${alert?"card-alert":""}`}>
-    <div className="flex justify-between"><span className="kpi-label">{label}</span>{alert&&<span style={{color:"var(--red)",fontSize:12}}>⚠</span>}</div>
-    <div className="kpi-value" style={{color:color||"var(--brown-800)"}}>{value}</div>
-    {sub&&<div className="kpi-sub">{sub}</div>}
-  </div>;
-}
-
-function Inp({label,...p}) {
-  return <div style={{marginBottom:12}}><Lbl>{label}</Lbl><input className="input-field" {...p}/></div>;
-}
-function Sel({label,options,...p}) {
-  return <div style={{marginBottom:12}}><Lbl>{label}</Lbl><select className="input-field" {...p}>{options.map(o=><option key={o} value={o}>{o}</option>)}</select></div>;
-}
-function Txa({label,...p}) {
-  return <div style={{marginBottom:12}}><Lbl>{label}</Lbl><textarea className="input-field" style={{minHeight:60,resize:"vertical"}} {...p}/></div>;
-}
-
-function Modal({title,onClose,children}) {
-  return <div className="modal-overlay" onClick={onClose}>
-    <div className="modal-content" onClick={e=>e.stopPropagation()}>
-      <div className="modal-header"><h2 className="modal-title">{title}</h2><button className="modal-close" onClick={onClose}>✕</button></div>
-      {children}
-    </div>
-  </div>;
-}
-
-function TabBar({tabs,active,onChange}) {
-  return <div className="tabs">{tabs.map(t=><button key={t.id} className={`tab-btn ${active===t.id?"active":""}`} onClick={()=>onChange(t.id)}>{t.label}{t.count!=null&&<span className={`tab-count ${t.alert?"alert":""}`}>{t.count}</span>}</button>)}</div>;
-}
-
-// ─── MAIN APP ────────────────────────────────────────────
-function App() {
-  // localStorage persistence
-  const loadData = () => { try { const d = localStorage.getItem('ic_ships'); return d ? JSON.parse(d) : null; } catch(e) { return null; } };
-  const [ships,setShips]=useState(() => loadData() || INIT_DATA);
-  useEffect(() => { try { localStorage.setItem('ic_ships', JSON.stringify(ships)); } catch(e) {} }, [ships]);
-  const [page,setPage]=useState("dash");
-  const [selId,setSelId]=useState(null);
+function App(){
+  const ld=()=>{try{const d=localStorage.getItem("ic2");return d?JSON.parse(d):null}catch(e){return null}};
+  const [ships,setShips]=useState(()=>ld()||D0);
+  const [pg,setPg]=useState("dash");
+  const [sid,setSid]=useState(null);
   const [modal,setModal]=useState(null);
   const [notif,setNotif]=useState(false);
 
-  const sel=ships.find(s=>s.id===selId);
+  useEffect(()=>{try{localStorage.setItem("ic2",JSON.stringify(ships))}catch(e){}},[ships]);
+
+  const sel=ships.find(s=>s.id===sid);
   const upd=useCallback((id,fn)=>setShips(p=>p.map(s=>s.id===id?fn({...s}):s)),[]);
-  const log=useCallback((id,action)=>upd(id,s=>({...s,audit:[{date:new Date().toISOString().slice(0,16).replace("T"," "),user:"Вы",action},...(s.audit||[])]})),[upd]);
-  const go=id=>{setSelId(id);setPage("ship");};
-  const back=()=>{setPage("dash");setSelId(null);};
+  const lg=useCallback((id,a)=>upd(id,s=>({...s,audit:[{d:new Date().toISOString().slice(0,16).replace("T"," "),u:"Вы",a},...(s.audit||[])]})),[upd]);
+  const go=id=>{setSid(id);setPg("ship")};
+  const bk=()=>{setPg("dash");setSid(null)};
+  const dl=(sid2,arr,iid)=>{upd(sid2,s=>({...s,[arr]:(s[arr]||[]).filter(x=>x.id!==iid)}));lg(sid2,`Удалено`)};
 
   const alerts=useMemo(()=>{
     const n=[];
     ships.forEach(s=>{
-      (s.tasks||[]).forEach(t=>{if(t.status==="overdue")n.push({msg:`⏱ ${t.name}`,sid:s.id,sev:"d"});});
-      (s.risks||[]).forEach(r=>{if(r.level==="critical"&&r.status!=="closed")n.push({msg:`⚠ ${r.name}`,sid:s.id,sev:"d"});});
-      (s.expenses||[]).forEach(e=>{if(e.fact>e.plan&&e.fact>0)n.push({msg:`💰 ${e.category}`,sid:s.id,sev:"w"});});
-    });
-    return n;
+      (s.tasks||[]).forEach(t=>{if(t.st==="overdue")n.push({m:`⏱ ${t.nm}`,sid:s.id,sv:"d"})});
+      (s.risks||[]).forEach(r=>{if(r.lv==="critical"&&r.st!=="closed")n.push({m:`⚠ ${r.nm}`,sid:s.id,sv:"d"})});
+      (s.exps||[]).forEach(e=>{if(e.fc>e.pl&&e.fc>0)n.push({m:`💰 ${e.cat}`,sid:s.id,sv:"w"})});
+    });return n;
   },[ships]);
 
   const createShip=d=>{
     const num=`SHP-${new Date().getFullYear()}-${String(ships.length+1).padStart(3,"0")}`;
-    setShips(p=>[{id:num,...d,status:"planning",createdAt:today(),budgetPlan:0,budgetFact:0,pallets:0,
-      stages:mkStages(),items:[],expenses:[],risks:[],tasks:[],documents:[],approvals:[],channels:[],
-      warehouse:{name:"",isConfirmed:false,expectedUnits:0,stock:[]},
-      launch:{status:"not_ready",channelsAssigned:false,pricesSet:false,stockDistributed:false},
-      scenarios:{base:{},optimistic:{},stress:{}},
-      audit:[{date:new Date().toISOString().slice(0,16).replace("T"," "),user:"Вы",action:`Создана ${num}`}]
+    setShips(p=>[{id:num,nm:d.nm,fac:d.fac,sup:d.sup,st:"planning",dt:td(),pP:d.pP,pS:d.pS,pA:d.pA,aA:null,
+      bP:0,bF:0,pal:0,resp:d.resp,cur:d.cur,rate:+d.rate||530,inc:d.inc,tr:d.tr,ca:"BY_PURCHASE_VALUE",
+      stages:mkS(),items:[],exps:[],risks:[],tasks:[],docs:[],channels:[],
+      wh:{nm:"",ok:false,exp:0,stk:[]},launch:{st:"not_ready",ch:false,pr:false,sd:false},
+      scen:{base:{},opt:{},str:{}},
+      audit:[{d:new Date().toISOString().slice(0,16).replace("T"," "),u:"Вы",a:`Создана ${num}`}]
     },...p]);
     setModal(null);go(num);
   };
 
-  const del=(shipId,arr,itemId)=>{upd(shipId,s=>({...s,[arr]:(s[arr]||[]).filter(x=>x.id!==itemId)}));log(shipId,`Удалено из ${arr}`);};
-
-  return (
-    <div>
-      <nav className="nav">
-        <div className="flex items-center gap-3" style={{cursor:"pointer"}} onClick={back}>
-          <div className="nav-logo">B</div>
-          <span className="nav-title">Import Control</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="nav-rate">EUR/KZT 531.20</span>
-          <div style={{position:"relative"}}>
-            <button onClick={()=>setNotif(!notif)} style={{background:"none",border:"none",color:alerts.length?"#F0C75E":"var(--muted)",cursor:"pointer",fontSize:16,position:"relative"}}>
-              🔔{alerts.length>0&&<span className="notif-badge">{alerts.length}</span>}
-            </button>
-            {notif&&<div className="notif-panel">
-              <div style={{fontSize:11,fontWeight:600,padding:"6px 8px",borderBottom:"1px solid var(--border)"}}>Уведомления ({alerts.length})</div>
-              {alerts.length===0?<div style={{padding:14,textAlign:"center",color:"var(--muted)",fontSize:12}}>Всё чисто</div>:
-              alerts.map((a,i)=><div key={i} onClick={()=>{go(a.sid);setNotif(false);}} style={{padding:7,borderBottom:"1px solid var(--border)",cursor:"pointer",fontSize:11,color:a.sev==="d"?"var(--red)":"var(--orange)"}}>{a.msg}</div>)}
-            </div>}
-          </div>
-          <button onClick={()=>setPage("settings")} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:15}}>⚙</button>
-        </div>
-      </nav>
-
-      <main style={{maxWidth:960,margin:"0 auto",padding:"18px 14px 50px"}}>
-        {page==="dash"&&<Dashboard ships={ships} go={go} onNew={()=>setModal("new")}/>}
-        {page==="ship"&&sel&&<ShipDetail s={sel} back={back} upd={upd} log={log} setModal={setModal} del={del} allShips={ships}/>}
-        {page==="settings"&&<Settings back={back}/>}
-      </main>
-
-      {/* Modals */}
-      {modal==="new"&&<NewShipModal close={()=>setModal(null)} save={createShip} templates={ships}/>}
-      {modal?.startsWith?.("item:")&&<AddModal title="Добавить SKU" close={()=>setModal(null)} fields={[
-        {k:"sku",l:"Артикул",ph:"CRO-003"},{k:"name",l:"Название",ph:"Круассан"},
-        {k:"category",l:"Категория"},{k:"qty",l:"Кол-во",t:"number"},{k:"priceEur",l:"Цена EUR",t:"number"},
-        {k:"plannedPrice",l:"План. цена ₸",t:"number"},{k:"margin",l:"Маржа %",t:"number"},
-        {k:"weightGross",l:"Вес кг",t:"number"},{k:"expiryDate",l:"Годен до",t:"date"},
-      ]} onSave={d=>{upd(modal.split(":")[1],s=>({...s,items:[...s.items,{id:gid(),...d,qty:+d.qty||0,priceEur:+d.priceEur||0,plannedPrice:+d.plannedPrice||0,margin:+d.margin||0,weightGross:+d.weightGross||0}]}));log(modal.split(":")[1],`+SKU ${d.sku}`);setModal(null);}} req={["sku","name"]}/>}
-      {modal?.startsWith?.("exp:")&&<AddModal title="Добавить расход" close={()=>setModal(null)} fields={[
-        {k:"category",l:"Категория",t:"select",opts:EXP_CATS},{k:"plan",l:"План ₸",t:"number"},
-        {k:"fact",l:"Факт ₸",t:"number"},{k:"currency",l:"Валюта",t:"select",opts:["KZT","EUR","USD"]},
-      ]} onSave={d=>{upd(modal.split(":")[1],s=>({...s,expenses:[...s.expenses,{id:gid(),...d,plan:+d.plan||0,fact:+d.fact||0,status:"draft"}]}));log(modal.split(":")[1],`+Расход ${d.category}`);setModal(null);}}/>}
-      {modal?.startsWith?.("task:")&&<AddModal title="Добавить задачу" close={()=>setModal(null)} fields={[
-        {k:"name",l:"Задача",ph:"Описание..."},{k:"responsible",l:"Ответственный"},
-        {k:"deadline",l:"Дедлайн",t:"date"},{k:"priority",l:"Приоритет",t:"select",opts:["low","medium","high","critical"]},
-      ]} onSave={d=>{upd(modal.split(":")[1],s=>({...s,tasks:[...s.tasks,{id:gid(),...d,status:"pending"}]}));log(modal.split(":")[1],`+Задача ${d.name}`);setModal(null);}} req={["name"]}/>}
-      {modal?.startsWith?.("risk:")&&<AddModal title="Добавить риск" close={()=>setModal(null)} fields={[
-        {k:"name",l:"Название",ph:"Описание риска..."},{k:"category",l:"Категория",t:"select",opts:RISK_CATS},
-        {k:"level",l:"Уровень",t:"select",opts:["low","medium","high","critical"]},
-        {k:"financialImpact",l:"Фин. ущерб ₸",t:"number"},{k:"mitigation",l:"Митигация",t:"textarea"},
-      ]} onSave={d=>{upd(modal.split(":")[1],s=>({...s,risks:[...s.risks,{id:gid(),...d,financialImpact:+d.financialImpact||0,status:"open"}]}));log(modal.split(":")[1],`+Риск ${d.name}`);setModal(null);}} req={["name"]}/>}
-      {modal?.startsWith?.("doc:")&&<AddModal title="Добавить документ" close={()=>setModal(null)} fields={[
-        {k:"type",l:"Тип",t:"select",opts:DOC_TYPES},{k:"name",l:"Название",ph:"INV-2026-001"},
-        {k:"date",l:"Дата",t:"date"},{k:"status",l:"Статус",t:"select",opts:["pending","uploaded","verified"]},
-        {k:"version",l:"Версия",t:"number",def:"1"},
-      ]} onSave={d=>{upd(modal.split(":")[1],s=>({...s,documents:[...(s.documents||[]),{id:gid(),...d,mandatory:false,uploadedBy:"Вы",version:+d.version||1}]}));log(modal.split(":")[1],`+Документ ${d.type}`);setModal(null);}}/>}
-      {modal?.startsWith?.("channel:")&&<AddModal title="Добавить канал" close={()=>setModal(null)} fields={[
-        {k:"name",l:"Название",ph:"Magnum..."},{k:"type",l:"Тип",t:"select",opts:["chain_store","wholesale","retail","horeca","marketplace","direct"]},
-        {k:"geography",l:"География"},{k:"commission",l:"Комиссия %",t:"number"},
-        {k:"paymentDelay",l:"Отсрочка (дни)",t:"number"},{k:"salesPlan",l:"План продаж ₸",t:"number"},
-      ]} onSave={d=>{upd(modal.split(":")[1],s=>({...s,channels:[...(s.channels||[]),{id:gid(),...d,priority:(s.channels||[]).length+1,status:"planned",salesFact:0,commission:+d.commission||0,paymentDelay:+d.paymentDelay||0,salesPlan:+d.salesPlan||0}]}));log(modal.split(":")[1],`+Канал ${d.name}`);setModal(null);}} req={["name"]}/>}
-    </div>
+  // ─── RENDER ──────────────────────────────────────────
+  return h("div",null,
+    // NAV
+    h("nav",{className:"nav"},
+      h("div",{style:{display:"flex",alignItems:"center",gap:10,cursor:"pointer"},onClick:bk},
+        h("div",{style:{width:28,height:28,borderRadius:6,background:"linear-gradient(135deg,#F0C75E,#D4A843)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:700,color:"#3D2E0A",fontFamily:"'DM Serif Display',serif"}},"B"),
+        h("span",{style:{fontFamily:"'DM Serif Display',serif",fontSize:15,color:"#FEF9EE"}},"Import Control")
+      ),
+      h("div",{style:{display:"flex",alignItems:"center",gap:12}},
+        h("span",{style:{fontSize:11,color:"#D4A843"}},"EUR/KZT 531.20"),
+        h("div",{style:{position:"relative"}},
+          h("button",{onClick:()=>setNotif(!notif),style:{background:"none",border:"none",color:alerts.length?"#F0C75E":"#A0936F",cursor:"pointer",fontSize:16,position:"relative"}},
+            "🔔",alerts.length>0&&h("span",{style:{position:"absolute",top:-4,right:-6,width:15,height:15,borderRadius:"50%",background:"#B94A3F",color:"#fff",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}},alerts.length)
+          ),
+          notif&&h("div",{style:{position:"absolute",right:0,top:30,width:280,background:"#FFFDF7",border:"1px solid #F0E8D8",borderRadius:10,boxShadow:"0 8px 24px rgba(60,46,10,.15)",padding:6,zIndex:200,maxHeight:260,overflowY:"auto"}},
+            h("div",{style:{fontSize:11,fontWeight:600,padding:"6px 8px",borderBottom:"1px solid #F0E8D8"}},"Уведомления (",alerts.length,")"),
+            alerts.length===0?h("div",{style:{padding:14,textAlign:"center",color:"#A0936F",fontSize:12}},"Всё чисто"):
+            alerts.map((a,i)=>h("div",{key:i,onClick:()=>{go(a.sid);setNotif(false)},style:{padding:7,borderBottom:"1px solid #F0E8D8",cursor:"pointer",fontSize:11,color:a.sv==="d"?"#B94A3F":"#C67B3C"}},a.m))
+          )
+        ),
+        h("button",{onClick:()=>setPg("settings"),style:{background:"none",border:"none",color:"#A0936F",cursor:"pointer",fontSize:15}},"⚙")
+      )
+    ),
+    // MAIN
+    h("main",{style:{maxWidth:960,margin:"0 auto",padding:"18px 14px 50px"}},
+      pg==="dash"&&h(Dash,{ships,go,onNew:()=>setModal("new")}),
+      pg==="ship"&&sel&&h(Ship,{s:sel,bk,upd,lg,setModal,dl,all:ships}),
+      pg==="settings"&&h(Sett,{bk})
+    ),
+    // MODALS
+    modal==="new"&&h(NewM,{close:()=>setModal(null),save:createShip}),
+    modal&&modal.startsWith&&modal.startsWith("item:")&&h(AddM,{title:"Добавить SKU",close:()=>setModal(null),fields:[["sku","Артикул"],["nm","Название"],["cat","Категория"],["qty","Кол-во","number"],["eur","Цена EUR","number"],["pp","План цена ₸","number"],["mg","Маржа %","number"]],onSave:d=>{upd(modal.split(":")[1],s=>({...s,items:[...s.items,{id:gid(),sku:d.sku,nm:d.nm,cat:d.cat,qty:+d.qty||0,eur:+d.eur||0,pp:+d.pp||0,mg:+d.mg||0,wg:0,exp:""}]}));lg(modal.split(":")[1],"+SKU "+d.sku);setModal(null)},req:["sku","nm"]}),
+    modal&&modal.startsWith&&modal.startsWith("exp:")&&h(AddM,{title:"Добавить расход",close:()=>setModal(null),fields:[["cat","Категория","select",ECATS],["pl","План ₸","number"],["fc","Факт ₸","number"],["cur","Валюта","select",["KZT","EUR","USD"]]],onSave:d=>{upd(modal.split(":")[1],s=>({...s,exps:[...s.exps,{id:gid(),cat:d.cat,pl:+d.pl||0,fc:+d.fc||0,cur:d.cur||"KZT",st:"draft"}]}));lg(modal.split(":")[1],"+Расход");setModal(null)}}),
+    modal&&modal.startsWith&&modal.startsWith("task:")&&h(AddM,{title:"Добавить задачу",close:()=>setModal(null),fields:[["nm","Задача"],["rsp","Ответственный"],["dl","Дедлайн","date"],["pr","Приоритет","select",["low","medium","high","critical"]]],onSave:d=>{upd(modal.split(":")[1],s=>({...s,tasks:[...s.tasks,{id:gid(),nm:d.nm,rsp:d.rsp,dl:d.dl,st:"pending",pr:d.pr||"medium"}]}));lg(modal.split(":")[1],"+Задача");setModal(null)},req:["nm"]}),
+    modal&&modal.startsWith&&modal.startsWith("risk:")&&h(AddM,{title:"Добавить риск",close:()=>setModal(null),fields:[["nm","Название"],["cat","Категория","select",RCATS],["lv","Уровень","select",["low","medium","high","critical"]],["fi","Фин. ущерб ₸","number"]],onSave:d=>{upd(modal.split(":")[1],s=>({...s,risks:[...s.risks,{id:gid(),nm:d.nm,cat:d.cat||RCATS[0],lv:d.lv||"medium",fi:+d.fi||0,st:"open",mt:""}]}));lg(modal.split(":")[1],"+Риск");setModal(null)},req:["nm"]}),
+    modal&&modal.startsWith&&modal.startsWith("doc:")&&h(AddM,{title:"Добавить документ",close:()=>setModal(null),fields:[["tp","Тип","select",DTYPES],["nm","Название"],["st","Статус","select",["pending","uploaded","verified"]]],onSave:d=>{upd(modal.split(":")[1],s=>({...s,docs:[...(s.docs||[]),{id:gid(),tp:d.tp||DTYPES[0],nm:d.nm,st:d.st||"uploaded",mand:false,ver:1,by:"Вы"}]}));lg(modal.split(":")[1],"+Документ");setModal(null)}}),
+    modal&&modal.startsWith&&modal.startsWith("ch:")&&h(AddM,{title:"Добавить канал",close:()=>setModal(null),fields:[["nm","Название"],["tp","Тип","select",["Сети","Опт","Розница","HoReCa","Маркетплейс","Прямые"]],["geo","География"],["com","Комиссия %","number"],["sP","План продаж ₸","number"]],onSave:d=>{upd(modal.split(":")[1],s=>({...s,channels:[...(s.channels||[]),{id:gid(),nm:d.nm,tp:d.tp||"Опт",pri:(s.channels||[]).length+1,st:"planned",geo:d.geo,com:+d.com||0,del:0,sP:+d.sP||0,sF:0}]}));lg(modal.split(":")[1],"+Канал");setModal(null)},req:["nm"]})
   );
 }
 
-// ─── UNIVERSAL ADD MODAL ─────────────────────────────────
-function AddModal({title,close,fields,onSave,req=[]}) {
-  const init={};fields.forEach(f=>{init[f.k]=f.def||"";});
-  const [d,sd]=useState(init);
-  const u=(k,v)=>sd(p=>({...p,[k]:v}));
-  const valid=req.length===0||req.every(k=>d[k]);
-  return <Modal title={title} onClose={close}>
-    <div className="grid grid-2" style={{gap:8}}>
-      {fields.map(f=>{
-        if(f.t==="select") return <Sel key={f.k} label={f.l} options={f.opts||[]} value={d[f.k]} onChange={e=>u(f.k,e.target.value)}/>;
-        if(f.t==="textarea") return <div key={f.k} style={{gridColumn:"1/-1"}}><Txa label={f.l} value={d[f.k]} onChange={e=>u(f.k,e.target.value)}/></div>;
-        return <Inp key={f.k} label={f.l} type={f.t||"text"} step={f.t==="number"?"any":undefined} placeholder={f.ph||""} value={d[f.k]} onChange={e=>u(f.k,e.target.value)}/>;
-      })}
-    </div>
-    <div className="flex justify-between" style={{marginTop:14,justifyContent:"flex-end",gap:8}}>
-      <button className="btn-secondary" onClick={close}>Отмена</button>
-      <button className="btn-primary" disabled={!valid} onClick={()=>onSave(d)}>Добавить</button>
-    </div>
-  </Modal>;
-}
-
-// ─── NEW SHIPMENT MODAL ──────────────────────────────────
-function NewShipModal({close,save,templates}) {
-  const [d,sd]=useState({name:"",factory:"Boulangerie Maison (Франция)",supplier:"EuroDistrib GmbH",responsible:"",currency:"EUR",exchangeRate:"530.40",plannedPurchase:"",plannedShipment:"",plannedArrival:"",incoterms:"FCA",transportType:"Авторефрижератор",costAllocation:"BY_PURCHASE_VALUE"});
-  const u=(k,v)=>sd(p=>({...p,[k]:v}));
-  return <Modal title="Новая поставка" onClose={close}>
-    <Inp label="Название" value={d.name} onChange={e=>u("name",e.target.value)} placeholder="Круассаны — Апрель 2026"/>
-    <div className="grid grid-2"><Inp label="Завод" value={d.factory} onChange={e=>u("factory",e.target.value)}/><Inp label="Поставщик" value={d.supplier} onChange={e=>u("supplier",e.target.value)}/></div>
-    <Inp label="Ответственный" value={d.responsible} onChange={e=>u("responsible",e.target.value)}/>
-    <div className="grid grid-3"><Inp label="Закуп" type="date" value={d.plannedPurchase} onChange={e=>u("plannedPurchase",e.target.value)}/><Inp label="Отгрузка" type="date" value={d.plannedShipment} onChange={e=>u("plannedShipment",e.target.value)}/><Inp label="Прибытие" type="date" value={d.plannedArrival} onChange={e=>u("plannedArrival",e.target.value)}/></div>
-    <div className="grid grid-3"><Sel label="Валюта" options={["EUR","USD"]} value={d.currency} onChange={e=>u("currency",e.target.value)}/><Inp label="Курс" type="number" value={d.exchangeRate} onChange={e=>u("exchangeRate",e.target.value)}/><Sel label="Incoterms" options={["FCA","CIF","DAP","EXW","FOB"]} value={d.incoterms} onChange={e=>u("incoterms",e.target.value)}/></div>
-    <div className="flex" style={{gap:8,justifyContent:"flex-end",marginTop:14}}>
-      <button className="btn-secondary" onClick={close}>Отмена</button>
-      <button className="btn-primary" disabled={!d.name} onClick={()=>save(d)}>Создать</button>
-    </div>
-  </Modal>;
-}
-
 // ─── DASHBOARD ───────────────────────────────────────────
-function Dashboard({ships,go,onNew}) {
-  const [filter,setFilter]=useState("all");
-  const [search,setSearch]=useState("");
-  const [sort,setSort]=useState("newest");
+function Dash({ships,go,onNew}){
+  const [flt,setFlt]=useState("all");
+  const [q,setQ]=useState("");
+  const [srt,setSrt]=useState("new");
+  const fl=useMemo(()=>{
+    let l=[...ships];
+    if(flt==="act")l=l.filter(s=>!["completed","cancelled"].includes(s.st));
+    else if(flt==="done")l=l.filter(s=>s.st==="completed");
+    else if(flt==="prob")l=l.filter(s=>co(s.tasks||[])>0||cr(s.risks||[])>0);
+    if(q.trim()){const qq=q.toLowerCase();l=l.filter(s=>s.nm.toLowerCase().includes(qq)||s.id.toLowerCase().includes(qq))}
+    if(srt==="new")l.sort((a,b)=>b.dt.localeCompare(a.dt));
+    else if(srt==="bud")l.sort((a,b)=>b.bP-a.bP);
+    return l;
+  },[ships,flt,q,srt]);
+  const act=ships.filter(s=>!["completed","cancelled"].includes(s.st));
+  const tP=act.reduce((a,s)=>a+(s.exps||[]).reduce((x,e)=>x+e.pl,0),0);
+  const tF=act.reduce((a,s)=>a+(s.exps||[]).reduce((x,e)=>x+e.fc,0),0);
+  const tO=ships.reduce((a,s)=>a+co(s.tasks||[]),0);
+  const tC=ships.reduce((a,s)=>a+cr(s.risks||[]),0);
 
-  const filtered=useMemo(()=>{
-    let list=[...ships];
-    if(filter==="active") list=list.filter(s=>!["completed","cancelled"].includes(s.status));
-    else if(filter==="completed") list=list.filter(s=>s.status==="completed");
-    else if(filter==="overdue") list=list.filter(s=>cntOD(s.tasks||[])>0||cntCR(s.risks||[])>0);
-    if(search.trim()){const q=search.toLowerCase();list=list.filter(s=>s.name.toLowerCase().includes(q)||s.id.toLowerCase().includes(q));}
-    if(sort==="newest") list.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
-    else if(sort==="budget_desc") list.sort((a,b)=>b.budgetPlan-a.budgetPlan);
-    else if(sort==="progress") list.sort((a,b)=>calcPct(b.stages||[])-calcPct(a.stages||[]));
-    return list;
-  },[ships,filter,search,sort]);
-
-  const act=ships.filter(s=>!["completed","cancelled"].includes(s.status));
-  const tP=act.reduce((a,s)=>a+(s.expenses||[]).reduce((x,e)=>x+e.plan,0),0);
-  const tF=act.reduce((a,s)=>a+(s.expenses||[]).reduce((x,e)=>x+e.fact,0),0);
-  const tO=ships.reduce((a,s)=>a+cntOD(s.tasks||[]),0);
-  const tC=ships.reduce((a,s)=>a+cntCR(s.risks||[]),0);
-
-  return <div>
-    <div className="flex justify-between items-center wrap gap-3" style={{marginBottom:20}}>
-      <div><h1 className="font-display" style={{fontSize:26}}>Dashboard импорта</h1><p className="text-muted" style={{fontSize:13,marginTop:4}}>Операционная картина по поставкам</p></div>
-      <button className="btn-primary" onClick={onNew}>+ Новая поставка</button>
-    </div>
-    <div className="grid grid-auto" style={{marginBottom:16}}>
-      <KPI label="Активных" value={act.length} sub={`из ${ships.length}`}/>
-      <KPI label="Бюджет план" value={fmt(tP)+" ₸"}/>
-      <KPI label="Бюджет факт" value={fmt(tF)+" ₸"} color={tF>tP?"var(--red)":"var(--green)"}/>
-      <KPI label="Просрочки" value={tO} alert={tO>0}/>
-      <KPI label="Крит. риски" value={tC} alert={tC>0}/>
-    </div>
-
-    {/* Filters */}
-    <div className="flex gap-2 wrap items-center" style={{marginBottom:14}}>
-      <div style={{flex:"1 1 200px",position:"relative"}}>
-        <input className="input-field" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Поиск..." style={{paddingLeft:32}}/>
-        <span style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"var(--muted)",fontSize:14}}>🔍</span>
-      </div>
-      {[{v:"all",l:"Все"},{v:"active",l:"Активные"},{v:"completed",l:"Завершённые"},{v:"overdue",l:"⚠ Проблемные"}].map(f=>
-        <button key={f.v} onClick={()=>setFilter(f.v)} style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:filter===f.v?700:400,color:filter===f.v?"var(--brown-500)":"var(--muted)",background:filter===f.v?"#FEF6E0":"transparent",border:`1px solid ${filter===f.v?"var(--amber-400)":"var(--input-border)"}`,cursor:"pointer",whiteSpace:"nowrap"}}>{f.l}</button>
-      )}
-      <select className="input-field" value={sort} onChange={e=>setSort(e.target.value)} style={{width:"auto",padding:"7px 10px",fontSize:12}}>
-        <option value="newest">Новые ↓</option><option value="budget_desc">Бюджет ↓</option><option value="progress">Прогресс ↓</option>
-      </select>
-    </div>
-
-    <div className="flex justify-between items-center" style={{marginBottom:10}}>
-      <h3 className="font-display" style={{fontSize:18,fontWeight:400}}>Журнал поставок</h3>
-      <span style={{fontSize:11,color:"var(--muted)"}}>{filtered.length} из {ships.length}</span>
-    </div>
-
-    <div className="flex flex-col gap-2">
-      {filtered.map(s=>{const p=calcPct(s.stages||[]);const o=cntOD(s.tasks||[]);const c=cntCR(s.risks||[]);
-      return <div key={s.id} className={`card card-hover ${o>0||c>0?"card-alert":""}`} onClick={()=>go(s.id)}>
-        <div className="flex justify-between items-center wrap gap-2" style={{marginBottom:7}}>
-          <div><div style={{fontSize:11,color:"var(--muted)"}}>{s.id} · {s.createdAt}</div><div className="font-display" style={{fontSize:15,marginTop:2}}>{s.name}</div></div>
-          <Badge s={s.status}/>
-        </div>
-        <div className="flex items-center gap-3" style={{marginBottom:7}}><div style={{flex:1}}><Prog p={p} c={s.status==="completed"?"#6B9B37":"#D4A843"} h={7}/></div><span style={{fontSize:13,fontWeight:600,color:"var(--brown-500)"}}>{p}%</span></div>
-        <div className="flex gap-3 wrap" style={{fontSize:12,color:"var(--label)"}}><span>{(s.items||[]).length} SKU</span><span>Бюджет: {fmt(s.budgetPlan||(s.expenses||[]).reduce((a,e)=>a+e.plan,0))} ₸</span><span>{s.responsible}</span></div>
-        {(o>0||c>0)&&<div className="flex gap-2 wrap" style={{marginTop:7}}>
-          {o>0&&<span style={{fontSize:10,color:"var(--red)",background:"#FBEAE9",padding:"2px 7px",borderRadius:7,fontWeight:600}}>⏱ {o}</span>}
-          {c>0&&<span style={{fontSize:10,color:"#8B2E2E",background:"#F5E0E0",padding:"2px 7px",borderRadius:7,fontWeight:600}}>⚠ {c}</span>}
-        </div>}
-      </div>;})}
-    </div>
-  </div>;
+  return h("div",null,
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:10,marginBottom:20}},
+      h("div",null,h("h1",{className:"fd",style:{fontSize:26}},"Dashboard импорта"),h("p",{style:{fontSize:13,color:"var(--muted)",marginTop:4}},"Операционная картина")),
+      h("button",{className:"btn btn-p",onClick:onNew},"+ Новая поставка")
+    ),
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:9,marginBottom:16}},
+      h(KP,{label:"Активных",value:act.length,sub:`из ${ships.length}`}),
+      h(KP,{label:"Бюджет план",value:fm(tP)+" ₸"}),
+      h(KP,{label:"Бюджет факт",value:fm(tF)+" ₸",color:tF>tP?"var(--red)":"var(--green)"}),
+      h(KP,{label:"Просрочки",value:tO,alert:tO>0}),
+      h(KP,{label:"Крит. риски",value:tC,alert:tC>0})
+    ),
+    // Filters
+    h("div",{style:{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap",alignItems:"center"}},
+      h("div",{style:{flex:"1 1 200px",position:"relative"}},
+        h("input",{className:"inp",value:q,onChange:e=>setQ(e.target.value),placeholder:"Поиск...",style:{paddingLeft:32}}),
+        h("span",{style:{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"var(--muted)"}},"🔍")
+      ),
+      ["all","act","done","prob"].map(f=>h("button",{key:f,onClick:()=>setFlt(f),style:{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:flt===f?700:400,color:flt===f?"var(--brown)":"var(--muted)",background:flt===f?"#FEF6E0":"transparent",border:`1px solid ${flt===f?"var(--amber)":"var(--iborder)"}`,cursor:"pointer"}},{all:"Все",act:"Активные",done:"Завершённые",prob:"⚠ Проблемные"}[f]))
+    ),
+    h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:10}},
+      h("h3",{className:"fd",style:{fontSize:18,fontWeight:400}},"Журнал поставок"),
+      h("span",{style:{fontSize:11,color:"var(--muted)"}},fl.length," из ",ships.length)
+    ),
+    h("div",{style:{display:"flex",flexDirection:"column",gap:9}},
+      fl.map(s=>{const p=cp(s.stages||[]);const o=co(s.tasks||[]);const c=cr(s.risks||[]);
+      return h("div",{key:s.id,className:`card ${o>0||c>0?"card-a":""}`,style:{cursor:"pointer",transition:"box-shadow .2s,transform .15s"},onClick:()=>go(s.id),
+        onMouseEnter:e=>{e.currentTarget.style.boxShadow="0 6px 20px rgba(60,46,10,.1)";e.currentTarget.style.transform="translateY(-1px)"},
+        onMouseLeave:e=>{e.currentTarget.style.boxShadow="0 2px 8px rgba(60,46,10,.05)";e.currentTarget.style.transform="none"}},
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:7,flexWrap:"wrap",gap:6}},
+          h("div",null,h("div",{style:{fontSize:11,color:"var(--muted)"}}," ",s.id," · ",s.dt),h("div",{className:"fd",style:{fontSize:15,marginTop:2}},s.nm)),
+          h(Bg,{s:s.st})
+        ),
+        h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:7}},h("div",{style:{flex:1}},h(Br,{p,c:s.st==="completed"?"#6B9B37":"#D4A843",ht:7})),h("span",{style:{fontSize:13,fontWeight:600,color:"var(--brown)"}},p,"%")),
+        h("div",{style:{display:"flex",gap:12,flexWrap:"wrap",fontSize:12,color:"var(--label)"}},
+          h("span",null,(s.items||[]).length," SKU"),h("span",null,"Бюджет: ",fm(s.bP||(s.exps||[]).reduce((a,e)=>a+e.pl,0))," ₸"),h("span",null,s.resp)
+        ),
+        (o>0||c>0)&&h("div",{style:{display:"flex",gap:7,marginTop:7}},
+          o>0&&h("span",{style:{fontSize:10,color:"var(--red)",background:"#FBEAE9",padding:"2px 7px",borderRadius:7,fontWeight:600}},"⏱ ",o),
+          c>0&&h("span",{style:{fontSize:10,color:"#8B2E2E",background:"#F5E0E0",padding:"2px 7px",borderRadius:7,fontWeight:600}},"⚠ ",c)
+        )
+      )})
+    )
+  );
 }
 
-// ─── SHIPMENT DETAIL (compact — core tabs) ───────────────
-function ShipDetail({s,back,upd,log,setModal,del,allShips}) {
+// ─── SHIPMENT DETAIL ─────────────────────────────────────
+function Ship({s,bk,upd,lg,setModal,dl,all}){
   const [tab,setTab]=useState("overview");
-  const p=calcPct(s.stages||[]);
-  const tP=(s.expenses||[]).reduce((a,e)=>a+e.plan,0);
-  const tF=(s.expenses||[]).reduce((a,e)=>a+e.fact,0);
+  const p=cp(s.stages||[]);
+  const tP=(s.exps||[]).reduce((a,e)=>a+e.pl,0);
+  const tF=(s.exps||[]).reduce((a,e)=>a+e.fc,0);
   const tU=(s.items||[]).reduce((a,i)=>a+(i.qty||0),0);
 
-  const tabs=[{id:"overview",label:"Обзор"},{id:"stages",label:"Этапы",count:(s.stages||[]).length},{id:"items",label:"SKU",count:(s.items||[]).length},{id:"expenses",label:"Расходы"},{id:"tasks",label:"Задачи",count:(s.tasks||[]).length,alert:cntOD(s.tasks||[])>0}];
-  if(FLAGS.risks) tabs.push({id:"risks",label:"Риски",count:(s.risks||[]).length,alert:cntCR(s.risks||[])>0});
-  if(FLAGS.documents) tabs.push({id:"docs",label:"Документы"});
-  if(FLAGS.scenarios) tabs.push({id:"scenarios",label:"Сценарии"});
-  if(FLAGS.warehouse_detail) tabs.push({id:"warehouse",label:"Склад"});
-  tabs.push({id:"launch",label:"Запуск"});
-  if(FLAGS.sales) tabs.push({id:"channels",label:"Каналы"});
-  if(FLAGS.sales) tabs.push({id:"analytics",label:"Аналитика"});
-  if(FLAGS.audit_log) tabs.push({id:"audit",label:"История"});
+  const tabs=[{id:"overview",l:"Обзор"},{id:"stages",l:"Этапы"},{id:"items",l:"SKU"},{id:"exps",l:"Расходы"},{id:"tasks",l:"Задачи"},{id:"risks",l:"Риски"},{id:"docs",l:"Документы"},{id:"scen",l:"Сценарии"},{id:"wh",l:"Склад"},{id:"launch",l:"Запуск"},{id:"ch",l:"Каналы"},{id:"analytics",l:"Аналитика"},{id:"audit",l:"История"}];
 
-  const togStage=sid=>{upd(s.id,sh=>{const st=sh.stages.find(x=>x.id===sid);if(!st)return sh;if(st.status==="not_started"){st.status="in_progress";st.pct=10;}else if(st.status==="in_progress"){if(st.substages.some(x=>x.mandatory&&!x.completed))return sh;st.status="completed";st.pct=100;}else{st.status="in_progress";st.pct=80;}return sh;});log(s.id,"Этап обновлён");};
-  const togSub=(sid,ssid)=>{upd(s.id,sh=>{const st=sh.stages.find(x=>x.id===sid);if(!st)return sh;const ss=st.substages.find(x=>x.id===ssid);if(!ss)return sh;ss.completed=!ss.completed;const d=st.substages.filter(x=>x.completed).length;st.pct=Math.round(d/st.substages.length*100);if(st.pct===100)st.status="completed";else if(d>0)st.status="in_progress";else st.status="not_started";return sh;});};
-  const togTask=tid=>{upd(s.id,sh=>{const t=sh.tasks.find(x=>x.id===tid);if(t)t.status=t.status==="completed"?"pending":"completed";return sh;});log(s.id,"Задача обновлена");};
+  const togS=sid2=>{upd(s.id,sh=>{const st=sh.stages.find(x=>x.id===sid2);if(!st)return sh;if(st.st==="not_started"){st.st="in_progress";st.p=10}else if(st.st==="in_progress"){if(st.ss.some(x=>x.mand&&!x.done))return sh;st.st="completed";st.p=100}else{st.st="in_progress";st.p=80}return sh});lg(s.id,"Этап обновлён")};
+  const togSS=(sid2,ssid)=>{upd(s.id,sh=>{const st=sh.stages.find(x=>x.id===sid2);if(!st)return sh;const ss=st.ss.find(x=>x.id===ssid);if(!ss)return sh;ss.done=!ss.done;const d=st.ss.filter(x=>x.done).length;st.p=Math.round(d/st.ss.length*100);if(st.p===100)st.st="completed";else if(d>0)st.st="in_progress";else st.st="not_started";return sh})};
+  const togT=tid=>{upd(s.id,sh=>{const t=sh.tasks.find(x=>x.id===tid);if(t)t.st=t.st==="completed"?"pending":"completed";return sh});lg(s.id,"Задача")};
 
-  return <div>
-    <div className="flex items-center gap-2" style={{cursor:"pointer",marginBottom:5}} onClick={back}><span style={{color:"var(--brown-500)"}}>←</span><span style={{fontSize:13,color:"var(--brown-500)"}}>Назад</span></div>
-    <div className="flex justify-between items-center wrap gap-2" style={{marginBottom:16}}>
-      <div><div style={{fontSize:11,color:"var(--muted)"}}>{s.id}</div><h1 className="font-display" style={{fontSize:21,marginTop:3}}>{s.name}</h1><div style={{fontSize:12,color:"var(--label)",marginTop:3}}>{s.factory} · {s.supplier}</div></div>
-      <div className="flex items-center gap-2">
-        <button className="btn-secondary" style={{padding:"6px 12px",fontSize:11}} onClick={()=>{const blob=new Blob([JSON.stringify(s,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${s.id}.json`;a.click();}}>📥 Экспорт</button>
-        <Badge s={s.status}/>
-      </div>
-    </div>
-
-    <div className="grid grid-auto" style={{marginBottom:16}}>
-      <KPI label="Готовность" value={p+"%"} color="var(--amber-400)"/>
-      <KPI label="План" value={fmt(tP)+" ₸"}/>
-      <KPI label="Факт" value={fmt(tF)+" ₸"} color={tF>tP?"var(--red)":"var(--green)"}/>
-      <KPI label="EUR/KZT" value={s.exchangeRate||"—"} sub="закуп"/>
-      <KPI label="SKU" value={(s.items||[]).length} sub={ff(tU)+" ед."}/>
-    </div>
-
-    <TabBar tabs={tabs} active={tab} onChange={setTab}/>
-
-    <div className="card">
-      {/* OVERVIEW */}
-      {tab==="overview"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Общая информация</h3>
-        <div className="grid grid-auto" style={{fontSize:13,gap:10}}>
-          {[["Создано",s.createdAt],["План. закуп",s.plannedPurchase||"—"],["План. отгрузка",s.plannedShipment||"—"],["План. прибытие",s.plannedArrival||"—"],["Факт. прибытие",s.actualArrival||"—"],["Ответственный",s.responsible||"—"],["Транспорт",s.transportType||"—"],["Incoterms",s.incoterms||"—"]].map(([l,v],i)=><div key={i}><Lbl>{l}</Lbl><div style={{fontWeight:500}}>{v}</div></div>)}
-        </div>
-        <h3 className="font-display" style={{fontSize:18,margin:"18px 0 12px"}}>Маршрутная карта</h3>
-        {(s.stages||[]).map((st,i)=><div key={st.id} className="flex items-center gap-2" style={{marginBottom:2}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:SGC[st.status]||"#D9D3C7",flexShrink:0}}/>
-          <span style={{flex:1,fontSize:12,color:st.status==="completed"?"var(--green)":st.status==="in_progress"?"var(--brown-800)":"var(--muted)"}}>{st.name}</span>
-          <div style={{width:45}}><Prog p={st.pct} c={SGC[st.status]} h={4}/></div>
-          <span style={{fontSize:10,color:"var(--muted)",width:26,textAlign:"right"}}>{st.pct}%</span>
-        </div>)}
-      </div>}
-
-      {/* STAGES */}
-      {tab==="stages"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Маршрутная карта</h3>
-        {(s.stages||[]).map((st,i)=><div key={st.id} style={{marginBottom:10,border:`1px solid ${st.status==="completed"?"#D4E8BF":st.status==="in_progress"?"#C5DDF0":"var(--border)"}`,borderRadius:10,overflow:"hidden"}}>
-          <div className="flex items-center gap-3" style={{padding:"9px 12px",background:st.status==="completed"?"#F6FAF0":st.status==="in_progress"?"#F5FAFF":"#FEFCF6",cursor:"pointer"}} onClick={()=>togStage(st.id)}>
-            <div style={{width:24,height:24,borderRadius:"50%",background:SGC[st.status],display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:700,flexShrink:0}}>{st.status==="completed"?"✓":i+1}</div>
-            <div style={{flex:1,fontSize:13,fontWeight:500}}>{st.name}</div>
-            <div style={{width:60}}><Prog p={st.pct} c={SGC[st.status]} h={5}/></div>
-            <span style={{fontSize:12,fontWeight:600,color:SGC[st.status],width:34,textAlign:"right"}}>{st.pct}%</span>
-          </div>
-          {st.status!=="not_started"&&<div style={{padding:"5px 12px 8px",background:"#FEFCF6"}}>{st.substages.map(ss=><div key={ss.id} className="flex items-center gap-2" style={{padding:"3px 0",cursor:"pointer"}} onClick={()=>togSub(st.id,ss.id)}>
-            <div style={{width:15,height:15,borderRadius:3,border:`2px solid ${ss.completed?"var(--green)":ss.mandatory?"var(--amber-400)":"#D9D3C7"}`,background:ss.completed?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{ss.completed&&<span style={{color:"#fff",fontSize:9}}>✓</span>}</div>
-            <span style={{fontSize:12,color:ss.completed?"var(--green)":"var(--brown-800)",textDecoration:ss.completed?"line-through":"none"}}>{ss.name}</span>
-            {ss.mandatory&&!ss.completed&&<span style={{fontSize:9,color:"var(--orange)",background:"#FEF3E8",padding:"1px 5px",borderRadius:5}}>обяз.</span>}
-          </div>)}</div>}
-        </div>)}
-      </div>}
-
-      {/* SKU */}
-      {tab==="items"&&<div>
-        <div className="flex justify-between items-center" style={{marginBottom:12}}><h3 className="font-display" style={{fontSize:18}}>SKU</h3><button className="btn-primary" onClick={()=>setModal(`item:${s.id}`)}>+ SKU</button></div>
-        {!(s.items||[]).length?<div className="text-center text-muted" style={{padding:24}}>Нет SKU</div>:
-        <div style={{overflowX:"auto"}}><table className="data-table"><thead><tr>{["SKU","Название","Кат.","Кол-во","€","₸","Маржа",""].map(h=><th key={h} style={{textAlign:["Кол-во","€","₸","Маржа"].includes(h)?"right":"left"}}>{h}</th>)}</tr></thead>
-        <tbody>{(s.items||[]).map(it=><tr key={it.id}><td style={{color:"var(--brown-500)",fontWeight:600}}>{it.sku}</td><td>{it.name}</td><td className="text-muted">{it.category||"—"}</td><td className="text-right">{ff(it.qty)}</td><td className="text-right">€{it.priceEur?.toFixed(2)}</td><td className="text-right">{it.plannedPrice?ff(it.plannedPrice):"-"}</td><td className="text-right"><span style={{color:it.margin>=40?"var(--green)":it.margin>=30?"var(--amber-400)":"var(--red)",fontWeight:600}}>{it.margin}%</span></td><td><button className="btn-icon" onClick={e=>{e.stopPropagation();del(s.id,"items",it.id);}}>✕</button></td></tr>)}</tbody></table></div>}
-      </div>}
-
-      {/* EXPENSES */}
-      {tab==="expenses"&&<div>
-        <div className="flex justify-between items-center" style={{marginBottom:12}}><h3 className="font-display" style={{fontSize:18}}>Расходы</h3><button className="btn-primary" onClick={()=>setModal(`exp:${s.id}`)}>+ Расход</button></div>
-        {!(s.expenses||[]).length?<div className="text-center text-muted" style={{padding:24}}>Нет</div>:
-        <div style={{overflowX:"auto"}}><table className="data-table"><thead><tr>{["Категория","Вал.","План","Факт","Δ",""].map(h=><th key={h} style={{textAlign:["План","Факт","Δ"].includes(h)?"right":"left"}}>{h}</th>)}</tr></thead>
-        <tbody>{(s.expenses||[]).map(e=>{const d2=e.fact-e.plan;return<tr key={e.id}><td>{e.category}</td><td className="text-muted">{e.currency}</td><td className="text-right">{ff(e.plan)}</td><td className="text-right">{e.fact>0?ff(e.fact):"—"}</td><td className="text-right" style={{color:d2>0&&e.fact>0?"var(--red)":"var(--green)",fontWeight:600}}>{e.fact>0?(d2>0?"+":"")+ff(d2):"—"}</td><td><button className="btn-icon" onClick={()=>del(s.id,"expenses",e.id)}>✕</button></td></tr>;})}</tbody>
-        <tfoot><tr><td>Итого</td><td/><td className="text-right">{ff(tP)}</td><td className="text-right">{tF>0?ff(tF):"—"}</td><td className="text-right" style={{color:tF-tP>0?"var(--red)":"var(--green)"}}>{tF>0?ff(tF-tP):"—"}</td><td/></tr></tfoot></table></div>}
-      </div>}
-
-      {/* TASKS */}
-      {tab==="tasks"&&<div>
-        <div className="flex justify-between items-center" style={{marginBottom:12}}><h3 className="font-display" style={{fontSize:18}}>Задачи</h3><button className="btn-primary" onClick={()=>setModal(`task:${s.id}`)}>+ Задача</button></div>
-        <div className="flex flex-col gap-2">{(s.tasks||[]).map(t=><div key={t.id} className="flex items-center gap-2" style={{padding:"7px 9px",background:t.status==="overdue"?"#FDF0EE":"#FEFCF6",borderRadius:7,border:`1px solid ${t.status==="overdue"?"#E8C5C1":"var(--border)"}`}}>
-          <div onClick={()=>togTask(t.id)} style={{width:16,height:16,borderRadius:3,border:`2px solid ${t.status==="completed"?"var(--green)":t.status==="overdue"?"var(--red)":"var(--amber-400)"}`,background:t.status==="completed"?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>{t.status==="completed"&&<span style={{color:"#fff",fontSize:9}}>✓</span>}</div>
-          <div style={{flex:1}}><div style={{fontSize:12,textDecoration:t.status==="completed"?"line-through":"none"}}>{t.name}</div><div style={{fontSize:11,color:"var(--muted)"}}>{t.responsible} · {t.deadline}</div></div>
-          {t.status==="overdue"&&<span style={{fontSize:10,color:"var(--red)",background:"#FBEAE9",padding:"2px 7px",borderRadius:7,fontWeight:600}}>!</span>}
-          <button className="btn-icon" onClick={()=>del(s.id,"tasks",t.id)}>✕</button>
-        </div>)}</div>
-      </div>}
-
-      {/* RISKS */}
-      {tab==="risks"&&<div>
-        <div className="flex justify-between items-center" style={{marginBottom:12}}><h3 className="font-display" style={{fontSize:18}}>Риски</h3><button className="btn-primary" onClick={()=>setModal(`risk:${s.id}`)}>+ Риск</button></div>
-        <div className="flex flex-col gap-2">{(s.risks||[]).map(r=><div key={r.id} className="flex items-center gap-2" style={{padding:"9px 11px",background:r.level==="critical"?"#FDF0EE":"#FEFCF6",borderRadius:7,border:`1px solid ${r.level==="critical"?"#E8C5C1":"var(--border)"}`}}>
-          <div style={{width:8,height:8,borderRadius:"50%",background:RC[r.level],flexShrink:0}}/>
-          <div style={{flex:1}}><div style={{fontSize:13,fontWeight:500}}>{r.name}</div><div style={{fontSize:11,color:"var(--muted)"}}>{r.category}</div></div>
-          <div className="text-right"><div style={{fontSize:10,color:RC[r.level],fontWeight:600}}>{r.level}</div>{r.financialImpact>0&&<div style={{fontSize:11,color:"var(--label)"}}>{ff(r.financialImpact)} ₸</div>}</div>
-          <button className="btn-icon" onClick={()=>del(s.id,"risks",r.id)}>✕</button>
-        </div>)}</div>
-      </div>}
-
-      {/* DOCUMENTS */}
-      {tab==="docs"&&<div>
-        <div className="flex justify-between items-center" style={{marginBottom:12}}><h3 className="font-display" style={{fontSize:18}}>Документы</h3><button className="btn-primary" onClick={()=>setModal(`doc:${s.id}`)}>+ Документ</button></div>
-        {(()=>{const docs=s.documents||[];const miss=docs.filter(d=>d.mandatory&&d.status==="pending");
-        return<>{miss.length>0&&<div style={{padding:10,background:"#FBEAE9",borderRadius:8,marginBottom:12,fontSize:12,color:"var(--red)"}}>⚠ Обязательные документы: {miss.length} не загружены</div>}
-        <div style={{overflowX:"auto"}}><table className="data-table"><thead><tr>{["Тип","Название","Статус","Вер.",""].map(h=><th key={h}>{h}</th>)}</tr></thead>
-        <tbody>{docs.map(d=><tr key={d.id}><td style={{fontWeight:600,color:"var(--brown-500)"}}>{d.type}</td><td>{d.name}</td><td><Badge s={d.status}/></td><td>{d.version||"—"}</td><td><button className="btn-icon" onClick={()=>del(s.id,"documents",d.id)}>✕</button></td></tr>)}</tbody></table></div></>;})()}
-      </div>}
-
-      {/* SCENARIOS */}
-      {tab==="scenarios"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Сценарный анализ</h3>
-        {(()=>{const sc=s.scenarios||{};const labels={base:"Базовый",optimistic:"Оптимистичный",stress:"Стрессовый"};const colors={base:"var(--amber-400)",optimistic:"var(--green)",stress:"var(--red)"};
-        const params=["exchangeRate","deliveryDays","logisticsCost","customsCost","defectRate","salesPace","salePrice","discount"];
-        const pLabels={exchangeRate:"Курс",deliveryDays:"Дни",logisticsCost:"Логистика",customsCost:"Таможня",defectRate:"Брак",salesPace:"Темп",salePrice:"Цена",discount:"Скидка"};
-        const fmtV=(k,v)=>{if(!v)return"—";if(k.includes("Cost"))return ff(v);if(k.includes("Rate")&&v<1)return(v*100).toFixed(0)+"%";return String(v);};
-        const calcP=sc2=>{const tp=(s.items||[]).reduce((a,it)=>a+it.qty*it.priceEur*(sc2.exchangeRate||530),0);const tc=tp+(sc2.logisticsCost||0)+(sc2.customsCost||0);const tr=(s.items||[]).reduce((a,it)=>a+it.qty*(sc2.salePrice||it.plannedPrice||0),0)*(1-(sc2.discount||0)/100)*(sc2.salesPace||1);return tr-tr*((sc2.returnRate||0)+(sc2.defectRate||0))-tc;};
-        return<div style={{overflowX:"auto"}}><table className="data-table"><thead><tr><th>Параметр</th>{Object.keys(labels).map(k=><th key={k} className="text-right" style={{color:colors[k],fontWeight:700}}>{labels[k]}</th>)}</tr></thead>
-        <tbody>{params.map(pk=><tr key={pk}><td>{pLabels[pk]}</td>{Object.keys(labels).map(sk=><td key={sk} className="text-right">{fmtV(pk,sc[sk]?.[pk])}</td>)}</tr>)}</tbody>
-        <tfoot><tr><td style={{fontWeight:700}}>Прогноз прибыли</td>{Object.keys(labels).map(sk=>{const pr=calcP(sc[sk]||{});return<td key={sk} className="text-right" style={{fontWeight:700,color:pr>=0?"var(--green)":"var(--red)"}}>{pr>=0?"+":""}{fmt(Math.round(pr))} ₸</td>;})}</tr></tfoot></table></div>;})()}
-      </div>}
-
-      {/* WAREHOUSE */}
-      {tab==="warehouse"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Склад</h3>
-        {(()=>{const wh=s.warehouse||{};
-        return<div>
-          <div className="grid grid-auto" style={{marginBottom:14}}>
-            <KPI label="Склад" value={wh.name||"Не назначен"}/>
-            <KPI label="Ожидается" value={ff(wh.expectedUnits||tU)+" ед."}/>
-            <KPI label="Статус" value={wh.isConfirmed?"Подтверждено":"Ожидает"} color={wh.isConfirmed?"var(--green)":"var(--amber-400)"}/>
-          </div>
-          {!wh.isConfirmed?<div style={{padding:14,border:"1px dashed var(--amber-400)",borderRadius:10,background:"#FEF6E0"}}>
-            <div style={{fontSize:14,fontWeight:600,marginBottom:10}}>Подтверждение приёмки</div>
-            <div className="grid grid-3"><Inp label="Дата прибытия" type="date" value={wh.arrivalDate||""} onChange={e=>upd(s.id,sh=>({...sh,warehouse:{...sh.warehouse,arrivalDate:e.target.value}}))}/><Inp label="Факт. единиц" type="number" value={wh.actualUnits||""} onChange={e=>upd(s.id,sh=>({...sh,warehouse:{...sh.warehouse,actualUnits:+e.target.value}}))}/><Inp label="Повреждений" type="number" value={wh.damagedUnits||""} onChange={e=>upd(s.id,sh=>({...sh,warehouse:{...sh.warehouse,damagedUnits:+e.target.value}}))}/></div>
-            <button className="btn-primary" onClick={()=>{upd(s.id,sh=>{const w={...sh.warehouse,isConfirmed:true};w.stock=(sh.items||[]).map(it=>({sku:it.sku,name:it.name,available:it.qty,sold:0}));return{...sh,warehouse:w,actualArrival:w.arrivalDate};});log(s.id,"Приёмка подтверждена");}}>Подтвердить</button>
-          </div>:
-          <div><div style={{color:"var(--green)",fontWeight:600,marginBottom:10}}>✓ Приёмка подтверждена</div>
-            {(wh.stock||[]).length>0&&<table className="data-table"><thead><tr><th>SKU</th><th>Название</th><th className="text-right">Доступно</th><th className="text-right">Продано</th></tr></thead>
-            <tbody>{wh.stock.map((st,i)=><tr key={i}><td style={{fontWeight:600,color:"var(--brown-500)"}}>{st.sku}</td><td>{st.name}</td><td className="text-right text-success font-bold">{ff(st.available)}</td><td className="text-right">{ff(st.sold)}</td></tr>)}</tbody></table>}
-          </div>}
-        </div>;})()}
-      </div>}
-
-      {/* LAUNCH */}
-      {tab==="launch"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Запуск продаж</h3>
-        {(()=>{const ln=s.launch||{};const isOk=(s.warehouse||{}).isConfirmed;
-        return<div>
-          {!isOk&&<div style={{padding:12,background:"#FBEAE9",borderRadius:8,fontSize:13,color:"var(--red)",marginBottom:14}}>⚠ Склад не подтверждён</div>}
-          {[{k:"stockDistributed",l:"Товар распределён"},{k:"pricesSet",l:"Цены установлены"},{k:"channelsAssigned",l:"Каналы назначены"}].map(it=>
-            <div key={it.k} className="flex items-center gap-2" style={{padding:"8px 10px",background:ln[it.k]?"#F6FAF0":"#FEFCF6",borderRadius:7,border:`1px solid ${ln[it.k]?"#D4E8BF":"var(--border)"}`,marginBottom:6,cursor:"pointer"}} onClick={()=>{upd(s.id,sh=>({...sh,launch:{...sh.launch,[it.k]:!sh.launch[it.k]}}));log(s.id,`Запуск: ${it.l}`);}}>
-              <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${ln[it.k]?"var(--green)":"var(--amber-400)"}`,background:ln[it.k]?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>{ln[it.k]&&<span style={{color:"#fff",fontSize:10}}>✓</span>}</div>
-              <span style={{fontSize:13}}>{it.l}</span>
-            </div>
-          )}
-          {isOk&&ln.stockDistributed&&ln.pricesSet&&ln.channelsAssigned&&ln.status!=="launched"&&<button className="btn-primary" style={{marginTop:12}} onClick={()=>{upd(s.id,sh=>({...sh,launch:{...sh.launch,status:"launched"},status:"selling"}));log(s.id,"Продажи запущены");}}>🚀 Запустить</button>}
-          {ln.status==="launched"&&<div style={{marginTop:12,padding:12,background:"#F0F7E6",borderRadius:8,color:"var(--green)",fontWeight:600}}>✓ Продажи запущены</div>}
-        </div>;})()}
-      </div>}
-
-      {/* CHANNELS */}
-      {tab==="channels"&&<div>
-        <div className="flex justify-between items-center" style={{marginBottom:12}}><h3 className="font-display" style={{fontSize:18}}>Каналы сбыта</h3><button className="btn-primary" onClick={()=>setModal(`channel:${s.id}`)}>+ Канал</button></div>
-        <div className="flex flex-col gap-2">{(s.channels||[]).map(c=><div key={c.id} className="flex items-center gap-3" style={{padding:"10px 12px",background:"#FEFCF6",borderRadius:8,border:"1px solid var(--border)"}}>
-          <div style={{width:24,height:24,borderRadius:6,background:"var(--amber-400)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:700}}>{c.priority}</div>
-          <div style={{flex:1}}><div style={{fontSize:13,fontWeight:500}}>{c.name}</div><div style={{fontSize:11,color:"var(--muted)"}}>{c.type} · {c.geography} · {c.commission}%</div></div>
-          <div className="text-right"><div style={{fontSize:12,fontWeight:600}}>{c.salesFact>0?ff(c.salesFact)+" ₸":"—"}</div><div style={{fontSize:10,color:"var(--muted)"}}>из {ff(c.salesPlan)} ₸</div></div>
-          <button className="btn-icon" onClick={()=>del(s.id,"channels",c.id)}>✕</button>
-        </div>)}</div>
-      </div>}
-
-      {/* ANALYTICS */}
-      {tab==="analytics"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Аналитика</h3>
-        {(()=>{const expenses=s.expenses||[];const items=s.items||[];
-        const expData=expenses.filter(e=>e.plan>0).map(e=>({name:e.category.length>12?e.category.slice(0,12)+"…":e.category,"План":e.plan,"Факт":e.fact}));
-        const skuData=items.map(it=>({name:it.sku,"Маржа":it.margin}));
-        const pieData=[
-          {name:"Завершено",value:(s.stages||[]).filter(x=>x.status==="completed").length,color:"#6B9B37"},
-          {name:"В работе",value:(s.stages||[]).filter(x=>x.status==="in_progress").length,color:"#5B8FB9"},
-          {name:"Не начато",value:(s.stages||[]).filter(x=>x.status==="not_started").length,color:"#D9D3C7"},
-        ].filter(d=>d.value>0);
-        return<div>
-          {expData.length>0&&<div style={{marginBottom:24}}><div style={{fontSize:14,fontWeight:600,marginBottom:8}}>Расходы: план vs факт</div>
-            <div style={{height:200,width:"100%"}}><ResponsiveContainer><BarChart data={expData}><CartesianGrid strokeDasharray="3 3" stroke="#F0E8D8"/><XAxis dataKey="name" tick={{fontSize:9}}/><YAxis tick={{fontSize:10}} tickFormatter={v=>fmt(v)}/><Tooltip formatter={v=>ff(v)+" ₸"}/><Legend wrapperStyle={{fontSize:11}}/><RBar dataKey="План" fill="#D4A843" radius={[4,4,0,0]}/><RBar dataKey="Факт" fill="#6B9B37" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></div>
-          </div>}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-            {pieData.length>0&&<div><div style={{fontSize:14,fontWeight:600,marginBottom:8}}>Прогресс этапов</div><div style={{height:170}}><ResponsiveContainer><PieChart><Pie data={pieData} cx="50%" cy="50%" innerRadius={35} outerRadius={65} dataKey="value">{pieData.map((e,i)=><Cell key={i} fill={e.color}/>)}</Pie><Tooltip/><Legend wrapperStyle={{fontSize:10}}/></PieChart></ResponsiveContainer></div></div>}
-            {skuData.length>0&&<div><div style={{fontSize:14,fontWeight:600,marginBottom:8}}>Маржа по SKU</div><div style={{height:170}}><ResponsiveContainer><BarChart data={skuData}><CartesianGrid strokeDasharray="3 3" stroke="#F0E8D8"/><XAxis dataKey="name" tick={{fontSize:9}}/><YAxis tick={{fontSize:10}}/><Tooltip/><RBar dataKey="Маржа" radius={[4,4,0,0]}>{skuData.map((e,i)=><Cell key={i} fill={e["Маржа"]>=40?"#6B9B37":e["Маржа"]>=30?"#D4A843":"#B94A3F"}/>)}</RBar></BarChart></ResponsiveContainer></div></div>}
-          </div>
-        </div>;})()}
-      </div>}
-
-      {/* AUDIT */}
-      {tab==="audit"&&<div>
-        <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>История</h3>
-        <div className="flex flex-col" style={{gap:3}}>{(s.audit||[]).map((l,i)=><div key={i} className="flex gap-2" style={{padding:"6px 9px",background:i%2===0?"#FEFCF6":"#FFFDF7",borderRadius:5,fontSize:12}}>
-          <span className="text-muted" style={{minWidth:95,whiteSpace:"nowrap"}}>{l.date}</span>
-          <span style={{color:"var(--brown-500)",fontWeight:600,minWidth:60}}>{l.user}</span>
-          <span>{l.action}</span>
-        </div>)}</div>
-      </div>}
-    </div>
-  </div>;
+  return h("div",null,
+    h("div",{style:{cursor:"pointer",marginBottom:5,display:"flex",alignItems:"center",gap:8},onClick:bk},h("span",{style:{color:"var(--brown)",fontSize:16}},"←"),h("span",{style:{fontSize:13,color:"var(--brown)"}},"Назад")),
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:8}},
+      h("div",null,h("div",{style:{fontSize:11,color:"var(--muted)"}},s.id),h("h1",{className:"fd",style:{fontSize:21,marginTop:3}},s.nm),h("div",{style:{fontSize:12,color:"var(--label)",marginTop:3}},s.fac," · ",s.sup)),
+      h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+        h("button",{className:"btn btn-s",style:{padding:"6px 12px",fontSize:11},onClick:()=>{const b=new Blob([JSON.stringify(s,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=s.id+".json";a.click()}},"📥"),
+        h(Bg,{s:s.st})
+      )
+    ),
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(125px,1fr))",gap:8,marginBottom:16}},
+      h(KP,{label:"Готовность",value:p+"%",color:"var(--amber)"}),
+      h(KP,{label:"План",value:fm(tP)+" ₸"}),
+      h(KP,{label:"Факт",value:fm(tF)+" ₸",color:tF>tP?"var(--red)":"var(--green)"}),
+      h(KP,{label:"EUR/KZT",value:s.rate||"—",sub:"закуп"}),
+      h(KP,{label:"SKU",value:(s.items||[]).length,sub:ff(tU)+" ед."})
+    ),
+    // Tabs
+    h("div",{className:"tabs"},tabs.map(t=>h("button",{key:t.id,className:`tab ${tab===t.id?"on":""}`,onClick:()=>setTab(t.id)},t.l))),
+    h("div",{className:"card"},
+      // OVERVIEW
+      tab==="overview"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Общая информация"),
+        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10,fontSize:13}},
+          [["Создано",s.dt],["Закуп",s.pP||"—"],["Отгрузка",s.pS||"—"],["Прибытие",s.pA||"—"],["Факт. прибытие",s.aA||"—"],["Ответственный",s.resp||"—"],["Транспорт",s.tr||"—"],["Incoterms",s.inc||"—"]].map(([l,v],i)=>h("div",{key:i},h(Lb,null,l),h("div",{style:{fontWeight:500}},v)))
+        ),
+        h("h3",{className:"fd",style:{fontSize:18,margin:"18px 0 12px"}},"Маршрутная карта"),
+        (s.stages||[]).map((st,i)=>h("div",{key:st.id,style:{display:"flex",alignItems:"center",gap:7,marginBottom:2}},
+          h("div",{style:{width:7,height:7,borderRadius:"50%",background:SG[st.st]||"#D9D3C7",flexShrink:0}}),
+          h("span",{style:{flex:1,fontSize:12,color:st.st==="completed"?"var(--green)":st.st==="in_progress"?"var(--dk)":"var(--muted)"}},st.n),
+          h("div",{style:{width:45}},h(Br,{p:st.p,c:SG[st.st],ht:4})),
+          h("span",{style:{fontSize:10,color:"var(--muted)",width:26,textAlign:"right"}},st.p,"%")
+        ))
+      ),
+      // STAGES
+      tab==="stages"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Маршрутная карта"),
+        (s.stages||[]).map((st,i)=>h("div",{key:st.id,style:{marginBottom:10,border:`1px solid ${st.st==="completed"?"#D4E8BF":st.st==="in_progress"?"#C5DDF0":"var(--border)"}`,borderRadius:10,overflow:"hidden"}},
+          h("div",{style:{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",background:st.st==="completed"?"#F6FAF0":st.st==="in_progress"?"#F5FAFF":"#FEFCF6",cursor:"pointer"},onClick:()=>togS(st.id)},
+            h("div",{style:{width:24,height:24,borderRadius:"50%",background:SG[st.st],display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:700,flexShrink:0}},st.st==="completed"?"✓":i+1),
+            h("div",{style:{flex:1,fontSize:13,fontWeight:500}},st.n),
+            h("div",{style:{width:60}},h(Br,{p:st.p,c:SG[st.st],ht:5})),
+            h("span",{style:{fontSize:12,fontWeight:600,color:SG[st.st],width:34,textAlign:"right"}},st.p,"%")
+          ),
+          st.st!=="not_started"&&h("div",{style:{padding:"5px 12px 8px",background:"#FEFCF6"}},
+            st.ss.map(ss=>h("div",{key:ss.id,style:{display:"flex",alignItems:"center",gap:7,padding:"3px 0",cursor:"pointer"},onClick:()=>togSS(st.id,ss.id)},
+              h("div",{style:{width:15,height:15,borderRadius:3,border:`2px solid ${ss.done?"var(--green)":ss.mand?"var(--amber)":"#D9D3C7"}`,background:ss.done?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},ss.done&&h("span",{style:{color:"#fff",fontSize:9}},"✓")),
+              h("span",{style:{fontSize:12,color:ss.done?"var(--green)":"var(--dk)",textDecoration:ss.done?"line-through":"none"}},ss.n),
+              ss.mand&&!ss.done&&h("span",{style:{fontSize:9,color:"var(--orange)",background:"#FEF3E8",padding:"1px 5px",borderRadius:5}},"обяз.")
+            ))
+          )
+        ))
+      ),
+      // SKU
+      tab==="items"&&h("div",null,
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},h("h3",{className:"fd",style:{fontSize:18}},"SKU"),h("button",{className:"btn btn-p",onClick:()=>setModal("item:"+s.id)},"+ SKU")),
+        (s.items||[]).length===0?h("div",{style:{textAlign:"center",color:"var(--muted)",padding:24}},"Нет SKU"):
+        h("div",{style:{overflowX:"auto"}},h("table",{className:"tbl"},
+          h("thead",null,h("tr",null,["SKU","Название","Кат.","Кол-во","€","₸","Маржа",""].map(x=>h("th",{key:x,style:{textAlign:["Кол-во","€","₸","Маржа"].includes(x)?"right":"left"}},x)))),
+          h("tbody",null,(s.items||[]).map(it=>h("tr",{key:it.id},
+            h("td",{style:{color:"var(--brown)",fontWeight:600}},it.sku),h("td",null,it.nm),h("td",{style:{color:"var(--muted)"}},it.cat||"—"),
+            h("td",{style:{textAlign:"right"}},ff(it.qty)),h("td",{style:{textAlign:"right"}},"€",it.eur?.toFixed(2)),
+            h("td",{style:{textAlign:"right"}},it.pp?ff(it.pp):"—"),
+            h("td",{style:{textAlign:"right"}},h("span",{style:{color:it.mg>=40?"var(--green)":it.mg>=30?"var(--amber)":"var(--red)",fontWeight:600}},it.mg,"%")),
+            h("td",null,h("button",{className:"btn",style:{background:"none",color:"var(--red)",padding:2,fontSize:14,border:"none",cursor:"pointer"},onClick:()=>dl(s.id,"items",it.id)},"✕"))
+          )))
+        ))
+      ),
+      // EXPENSES
+      tab==="exps"&&h("div",null,
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},h("h3",{className:"fd",style:{fontSize:18}},"Расходы"),h("button",{className:"btn btn-p",onClick:()=>setModal("exp:"+s.id)},"+ Расход")),
+        (s.exps||[]).length===0?h("div",{style:{textAlign:"center",color:"var(--muted)",padding:24}},"Нет"):
+        h("div",{style:{overflowX:"auto"}},h("table",{className:"tbl"},
+          h("thead",null,h("tr",null,["Категория","Вал.","План","Факт","Δ",""].map(x=>h("th",{key:x,style:{textAlign:["План","Факт","Δ"].includes(x)?"right":"left"}},x)))),
+          h("tbody",null,(s.exps||[]).map(e=>{const d2=e.fc-e.pl;return h("tr",{key:e.id},
+            h("td",null,e.cat),h("td",{style:{color:"var(--muted)"}},e.cur),
+            h("td",{style:{textAlign:"right"}},ff(e.pl)),h("td",{style:{textAlign:"right",color:e.fc>0?"var(--dk)":"var(--muted)"}},e.fc>0?ff(e.fc):"—"),
+            h("td",{style:{textAlign:"right",color:d2>0&&e.fc>0?"var(--red)":"var(--green)",fontWeight:600}},e.fc>0?(d2>0?"+":"")+ff(d2):"—"),
+            h("td",null,h("button",{style:{background:"none",border:"none",color:"var(--red)",cursor:"pointer",fontSize:14},onClick:()=>dl(s.id,"exps",e.id)},"✕"))
+          )})),
+          h("tfoot",null,h("tr",null,h("td",{style:{fontWeight:700}},"Итого"),h("td",null),h("td",{style:{textAlign:"right",fontWeight:700}},ff(tP)),h("td",{style:{textAlign:"right",fontWeight:700}},tF>0?ff(tF):"—"),h("td",{style:{textAlign:"right",fontWeight:700,color:tF-tP>0?"var(--red)":"var(--green)"}},tF>0?ff(tF-tP):"—"),h("td",null)))
+        ))
+      ),
+      // TASKS
+      tab==="tasks"&&h("div",null,
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},h("h3",{className:"fd",style:{fontSize:18}},"Задачи"),h("button",{className:"btn btn-p",onClick:()=>setModal("task:"+s.id)},"+ Задача")),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:5}},(s.tasks||[]).map(t=>h("div",{key:t.id,style:{display:"flex",alignItems:"center",gap:9,padding:"7px 9px",background:t.st==="overdue"?"#FDF0EE":"#FEFCF6",borderRadius:7,border:`1px solid ${t.st==="overdue"?"#E8C5C1":"var(--border)"}`}},
+          h("div",{onClick:()=>togT(t.id),style:{width:16,height:16,borderRadius:3,border:`2px solid ${t.st==="completed"?"var(--green)":t.st==="overdue"?"var(--red)":"var(--amber)"}`,background:t.st==="completed"?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}},t.st==="completed"&&h("span",{style:{color:"#fff",fontSize:9}},"✓")),
+          h("div",{style:{flex:1}},h("div",{style:{fontSize:12,textDecoration:t.st==="completed"?"line-through":"none"}},t.nm),h("div",{style:{fontSize:11,color:"var(--muted)"}},t.rsp," · ",t.dl)),
+          t.st==="overdue"&&h("span",{style:{fontSize:10,color:"var(--red)",background:"#FBEAE9",padding:"2px 7px",borderRadius:7,fontWeight:600}},"!"),
+          h("button",{style:{background:"none",border:"none",color:"var(--red)",cursor:"pointer",fontSize:14},onClick:()=>dl(s.id,"tasks",t.id)},"✕")
+        )))
+      ),
+      // RISKS
+      tab==="risks"&&h("div",null,
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},h("h3",{className:"fd",style:{fontSize:18}},"Риски"),h("button",{className:"btn btn-p",onClick:()=>setModal("risk:"+s.id)},"+ Риск")),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:5}},(s.risks||[]).map(r=>h("div",{key:r.id,style:{display:"flex",alignItems:"center",gap:9,padding:"9px 11px",background:r.lv==="critical"?"#FDF0EE":"#FEFCF6",borderRadius:7,border:`1px solid ${r.lv==="critical"?"#E8C5C1":"var(--border)"}`}},
+          h("div",{style:{width:8,height:8,borderRadius:"50%",background:RC2[r.lv],flexShrink:0}}),
+          h("div",{style:{flex:1}},h("div",{style:{fontSize:13,fontWeight:500}},r.nm),h("div",{style:{fontSize:11,color:"var(--muted)"}},r.cat)),
+          h("div",{style:{textAlign:"right"}},h("div",{style:{fontSize:10,color:RC2[r.lv],fontWeight:600}},r.lv),r.fi>0&&h("div",{style:{fontSize:11,color:"var(--label)"}},ff(r.fi)," ₸")),
+          h("button",{style:{background:"none",border:"none",color:"var(--red)",cursor:"pointer",fontSize:14},onClick:()=>dl(s.id,"risks",r.id)},"✕")
+        ))),
+        (s.risks||[]).length>0&&h("div",{style:{marginTop:14,padding:10,background:"#FEF6E0",borderRadius:7,fontSize:12}},h("strong",null,"Σ риск: "),ff((s.risks||[]).reduce((a,r)=>a+(r.fi||0),0))," ₸")
+      ),
+      // DOCUMENTS
+      tab==="docs"&&h("div",null,
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},h("h3",{className:"fd",style:{fontSize:18}},"Документы"),h("button",{className:"btn btn-p",onClick:()=>setModal("doc:"+s.id)},"+ Документ")),
+        (()=>{const docs=s.docs||[];const miss=docs.filter(d=>d.mand&&d.st==="pending");return h("div",null,
+          miss.length>0&&h("div",{style:{padding:10,background:"#FBEAE9",borderRadius:8,marginBottom:12,fontSize:12,color:"var(--red)"}},"⚠ Обязательные: ",miss.length," не загружены"),
+          h("div",{style:{overflowX:"auto"}},h("table",{className:"tbl"},
+            h("thead",null,h("tr",null,["Тип","Название","Статус","Вер.",""].map(x=>h("th",{key:x},x)))),
+            h("tbody",null,docs.map(d=>h("tr",{key:d.id},h("td",{style:{fontWeight:600,color:"var(--brown)"}},d.tp),h("td",null,d.nm),h("td",null,h(Bg,{s:d.st})),h("td",null,d.ver||"—"),h("td",null,h("button",{style:{background:"none",border:"none",color:"var(--red)",cursor:"pointer",fontSize:14},onClick:()=>dl(s.id,"docs",d.id)},"✕")))))
+          ))
+        )})()
+      ),
+      // SCENARIOS
+      tab==="scen"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Сценарии"),
+        (()=>{const sc=s.scen||{};const ls={base:"Базовый",opt:"Оптимистичный",str:"Стрессовый"};const cs={base:"var(--amber)",opt:"var(--green)",str:"var(--red)"};
+        const prs=["rate","days","log","cust","def","pace","price","disc"];const pl={rate:"Курс",days:"Дни",log:"Логистика",cust:"Таможня",def:"Брак",pace:"Темп",price:"Цена",disc:"Скидка"};
+        const fv=(k,v)=>{if(!v)return"—";if(["log","cust"].includes(k))return ff(v);if(["def","pace"].includes(k)&&v<1)return(v*100).toFixed(0)+"%";return String(v)};
+        const calcP=c=>{const tp=(s.items||[]).reduce((a,i)=>a+i.qty*i.eur*(c.rate||530),0);const tc=tp+(c.log||0)+(c.cust||0);const tr=(s.items||[]).reduce((a,i)=>a+i.qty*(c.price||i.pp||0),0)*(1-(c.disc||0)/100)*(c.pace||1);return tr-tr*((c.ret||0)+(c.def||0))-tc};
+        return h("div",{style:{overflowX:"auto"}},h("table",{className:"tbl"},
+          h("thead",null,h("tr",null,h("th",null,"Параметр"),Object.keys(ls).map(k=>h("th",{key:k,style:{textAlign:"right",color:cs[k],fontWeight:700}},ls[k])))),
+          h("tbody",null,prs.map(pk=>h("tr",{key:pk},h("td",null,pl[pk]),Object.keys(ls).map(sk=>h("td",{key:sk,style:{textAlign:"right"}},fv(pk,sc[sk]?.[pk])))))),
+          h("tfoot",null,h("tr",null,h("td",{style:{fontWeight:700}},"Прогноз прибыли"),Object.keys(ls).map(sk=>{const pr=calcP(sc[sk]||{});return h("td",{key:sk,style:{textAlign:"right",fontWeight:700,color:pr>=0?"var(--green)":"var(--red)"}},(pr>=0?"+":"")+fm(Math.round(pr))," ₸")})))
+        ))})()
+      ),
+      // WAREHOUSE
+      tab==="wh"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Склад"),
+        (()=>{const wh=s.wh||{};return h("div",null,
+          h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8,marginBottom:14}},
+            h(KP,{label:"Склад",value:wh.nm||"Не назначен"}),h(KP,{label:"Ожидается",value:ff(wh.exp||tU)+" ед."}),h(KP,{label:"Статус",value:wh.ok?"Подтверждено":"Ожидает",color:wh.ok?"var(--green)":"var(--amber)"})
+          ),
+          !wh.ok?h("div",{style:{padding:14,border:"1px dashed var(--amber)",borderRadius:10,background:"#FEF6E0"}},
+            h("div",{style:{fontSize:14,fontWeight:600,marginBottom:10}},"Подтверждение приёмки"),
+            h("button",{className:"btn btn-p",onClick:()=>{upd(s.id,sh=>{const w={...sh.wh,ok:true};w.stk=(sh.items||[]).map(i=>({sku:i.sku,nm:i.nm,av:i.qty,sold:0}));return{...sh,wh:w,aA:td()}});lg(s.id,"Приёмка подтверждена")}},
+              "Подтвердить приёмку")
+          ):
+          h("div",null,
+            h("div",{style:{color:"var(--green)",fontWeight:600,marginBottom:10}},"✓ Приёмка подтверждена"),
+            (wh.stk||[]).length>0&&h("table",{className:"tbl"},
+              h("thead",null,h("tr",null,h("th",null,"SKU"),h("th",null,"Название"),h("th",{style:{textAlign:"right"}},"Доступно"),h("th",{style:{textAlign:"right"}},"Продано"))),
+              h("tbody",null,(wh.stk||[]).map((st,i)=>h("tr",{key:i},h("td",{style:{fontWeight:600,color:"var(--brown)"}},st.sku),h("td",null,st.nm),h("td",{style:{textAlign:"right",color:"var(--green)",fontWeight:600}},ff(st.av)),h("td",{style:{textAlign:"right"}},ff(st.sold)))))
+            )
+          )
+        )})()
+      ),
+      // LAUNCH
+      tab==="launch"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Запуск продаж"),
+        (()=>{const ln=s.launch||{};const ok=(s.wh||{}).ok;return h("div",null,
+          !ok&&h("div",{style:{padding:12,background:"#FBEAE9",borderRadius:8,fontSize:13,color:"var(--red)",marginBottom:14}},"⚠ Склад не подтверждён"),
+          [{k:"sd",l:"Товар распределён"},{k:"pr",l:"Цены установлены"},{k:"ch",l:"Каналы назначены"}].map(it=>
+            h("div",{key:it.k,style:{display:"flex",alignItems:"center",gap:9,padding:"8px 10px",background:ln[it.k]?"#F6FAF0":"#FEFCF6",borderRadius:7,border:`1px solid ${ln[it.k]?"#D4E8BF":"var(--border)"}`,marginBottom:6,cursor:"pointer"},onClick:()=>{upd(s.id,sh=>({...sh,launch:{...sh.launch,[it.k]:!sh.launch[it.k]}}));lg(s.id,"Запуск: "+it.l)}},
+              h("div",{style:{width:18,height:18,borderRadius:4,border:`2px solid ${ln[it.k]?"var(--green)":"var(--amber)"}`,background:ln[it.k]?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}},ln[it.k]&&h("span",{style:{color:"#fff",fontSize:10}},"✓")),
+              h("span",{style:{fontSize:13}},it.l)
+            )
+          ),
+          ok&&ln.sd&&ln.pr&&ln.ch&&ln.st!=="launched"&&h("button",{className:"btn btn-p",style:{marginTop:12},onClick:()=>{upd(s.id,sh=>({...sh,launch:{...sh.launch,st:"launched"},st:"selling"}));lg(s.id,"Продажи запущены")}},"🚀 Запустить"),
+          ln.st==="launched"&&h("div",{style:{marginTop:12,padding:12,background:"#F0F7E6",borderRadius:8,color:"var(--green)",fontWeight:600}},"✓ Продажи запущены")
+        )})()
+      ),
+      // CHANNELS
+      tab==="ch"&&h("div",null,
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},h("h3",{className:"fd",style:{fontSize:18}},"Каналы"),h("button",{className:"btn btn-p",onClick:()=>setModal("ch:"+s.id)},"+ Канал")),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:5}},(s.channels||[]).map(c=>h("div",{key:c.id,style:{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:"#FEFCF6",borderRadius:8,border:"1px solid var(--border)"}},
+          h("div",{style:{width:24,height:24,borderRadius:6,background:"var(--amber)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:11,fontWeight:700}},c.pri),
+          h("div",{style:{flex:1}},h("div",{style:{fontSize:13,fontWeight:500}},c.nm),h("div",{style:{fontSize:11,color:"var(--muted)"}},c.tp," · ",c.geo," · ",c.com,"%")),
+          h("div",{style:{textAlign:"right"}},h("div",{style:{fontSize:12,fontWeight:600}},c.sF>0?ff(c.sF)+" ₸":"—"),h("div",{style:{fontSize:10,color:"var(--muted)"}},"из ",ff(c.sP)," ₸")),
+          h("button",{style:{background:"none",border:"none",color:"var(--red)",cursor:"pointer",fontSize:14},onClick:()=>dl(s.id,"channels",c.id)},"✕")
+        )))
+      ),
+      // ANALYTICS
+      tab==="analytics"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Аналитика"),
+        (()=>{
+          const exps=s.exps||[];const items=s.items||[];
+          const expD=exps.filter(e=>e.pl>0).map(e=>({name:e.cat.length>10?e.cat.slice(0,10)+"…":e.cat,"План":e.pl,"Факт":e.fc}));
+          const skuD=items.map(i=>({name:i.sku,"Маржа":i.mg}));
+          const pieD=[{name:"Готово",value:(s.stages||[]).filter(x=>x.st==="completed").length,color:"#6B9B37"},{name:"В работе",value:(s.stages||[]).filter(x=>x.st==="in_progress").length,color:"#5B8FB9"},{name:"Ожидает",value:(s.stages||[]).filter(x=>x.st==="not_started").length,color:"#D9D3C7"}].filter(d=>d.value>0);
+          return h("div",null,
+            expD.length>0&&h("div",{style:{marginBottom:24}},
+              h("div",{style:{fontSize:14,fontWeight:600,marginBottom:8}},"Расходы: план vs факт"),
+              h("div",{style:{height:200,width:"100%"}},h(ResponsiveContainer,null,h(BarChart,{data:expD},h(CartesianGrid,{strokeDasharray:"3 3",stroke:"#F0E8D8"}),h(XAxis,{dataKey:"name",tick:{fontSize:9}}),h(YAxis,{tick:{fontSize:10},tickFormatter:v=>fm(v)}),h(Tooltip,{formatter:v=>ff(v)+" ₸"}),h(Legend,{wrapperStyle:{fontSize:11}}),h(RBar,{dataKey:"План",fill:"#D4A843",radius:[4,4,0,0]}),h(RBar,{dataKey:"Факт",fill:"#6B9B37",radius:[4,4,0,0]}))))
+            ),
+            h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
+              pieD.length>0&&h("div",null,h("div",{style:{fontSize:14,fontWeight:600,marginBottom:8}},"Этапы"),h("div",{style:{height:170}},h(ResponsiveContainer,null,h(PieChart,null,h(Pie,{data:pieD,cx:"50%",cy:"50%",innerRadius:35,outerRadius:65,dataKey:"value"},pieD.map((e,i)=>h(Cell,{key:i,fill:e.color}))),h(Tooltip,null),h(Legend,{wrapperStyle:{fontSize:10}}))))),
+              skuD.length>0&&h("div",null,h("div",{style:{fontSize:14,fontWeight:600,marginBottom:8}},"Маржа SKU"),h("div",{style:{height:170}},h(ResponsiveContainer,null,h(BarChart,{data:skuD},h(CartesianGrid,{strokeDasharray:"3 3",stroke:"#F0E8D8"}),h(XAxis,{dataKey:"name",tick:{fontSize:9}}),h(YAxis,{tick:{fontSize:10}}),h(Tooltip,null),h(RBar,{dataKey:"Маржа",radius:[4,4,0,0]},skuD.map((e,i)=>h(Cell,{key:i,fill:e["Маржа"]>=40?"#6B9B37":e["Маржа"]>=30?"#D4A843":"#B94A3F"})))))))
+            )
+          )
+        })()
+      ),
+      // AUDIT
+      tab==="audit"&&h("div",null,
+        h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"История"),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:3}},(s.audit||[]).map((l,i)=>h("div",{key:i,style:{display:"flex",gap:9,padding:"6px 9px",background:i%2===0?"#FEFCF6":"#FFFDF7",borderRadius:5,fontSize:12}},
+          h("span",{style:{color:"var(--muted)",minWidth:95,whiteSpace:"nowrap"}},l.d),
+          h("span",{style:{color:"var(--brown)",fontWeight:600,minWidth:60}},l.u),
+          h("span",null,l.a)
+        )))
+      )
+    )
+  );
 }
 
-// ─── SETTINGS PAGE ───────────────────────────────────────
-function Settings({back}) {
-  return <div>
-    <div className="flex items-center gap-2" style={{cursor:"pointer",marginBottom:8}} onClick={back}><span style={{color:"var(--brown-500)"}}>←</span><span style={{fontSize:13,color:"var(--brown-500)"}}>Назад</span></div>
-    <h1 className="font-display" style={{fontSize:26,marginBottom:20}}>Настройки</h1>
-
-    <div className="card" style={{marginBottom:16,padding:"14px 16px",background:"#F6FAF0",border:"1px solid #D4E8BF"}}>
-      <div className="flex justify-between items-center wrap gap-2">
-        <div><div style={{fontSize:13,fontWeight:600}}>💾 Данные сохраняются в браузере (localStorage)</div><div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>Все изменения автоматически сохраняются и восстанавливаются при перезагрузке.</div></div>
-        <button className="btn-danger" onClick={()=>{if(confirm("Сбросить все данные к исходным?")){localStorage.removeItem("ic_ships");location.reload();}}}>🗑 Сбросить данные</button>
-      </div>
-    </div>
-
-    <div className="card" style={{marginBottom:16}}>
-      <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Модули платформы</h3>
-      <div className="grid" style={{gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:8}}>
-        {Object.entries(FLAGS).map(([k,v])=><div key={k} className="flex items-center gap-2" style={{padding:"8px 10px",background:v?"#F6FAF0":"#FEFCF6",borderRadius:8,border:`1px solid ${v?"#D4E8BF":"var(--border)"}`}}>
-          <input type="checkbox" checked={v} readOnly style={{width:16,height:16,accentColor:"var(--amber-400)"}}/>
-          <span style={{fontSize:13}}>{k}</span>
-        </div>)}
-      </div>
-    </div>
-    <div className="card">
-      <h3 className="font-display" style={{fontSize:18,marginBottom:14}}>Формулы расчёта</h3>
-      {[["Себестоимость SKU","закуп × курс + логист. + тамож. + склад + проч."],["Валовая прибыль","выручка − себестоимость"],["Чистая прибыль","валовая − возвраты − списания"],["Break-even","себестоимость × 1.05"],["Sell-through","продано / (остаток + продано)"]].map(([n,f],i)=>
-        <div key={i} className="flex gap-2" style={{padding:"6px 9px",background:i%2===0?"#FEFCF6":"#FFFDF7",borderRadius:5,fontSize:12,marginBottom:2}}>
-          <span style={{color:"var(--brown-500)",fontWeight:600,minWidth:140}}>{n}</span>
-          <span style={{fontFamily:"monospace",fontSize:11}}>{f}</span>
-        </div>
-      )}
-    </div>
-  </div>;
+// ─── MODALS ──────────────────────────────────────────────
+function AddM({title,close,fields,onSave,req=[]}){
+  const init={};fields.forEach(f=>{init[f[0]]=f.length>3?f[3][0]:"";});
+  const [d,sd]=useState(init);
+  const u=(k,v)=>sd(p=>({...p,[k]:v}));
+  const ok=req.length===0||req.every(k=>d[k]);
+  return h("div",{className:"modal-bg",onClick:close},
+    h("div",{className:"modal-box",onClick:e=>e.stopPropagation()},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+        h("h2",{className:"fd",style:{fontSize:20}},title),h("button",{style:{background:"none",border:"none",fontSize:20,color:"var(--muted)",cursor:"pointer"},onClick:close},"✕")
+      ),
+      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},
+        fields.map(f=>{
+          const [k,l,t,opts]=f;
+          if(t==="select")return h("div",{key:k,style:{marginBottom:12}},h(Lb,null,l),h("select",{className:"inp",value:d[k],onChange:e=>u(k,e.target.value)},opts.map(o=>h("option",{key:o,value:o},o))));
+          return h("div",{key:k,style:{marginBottom:12}},h(Lb,null,l),h("input",{className:"inp",type:t||"text",step:t==="number"?"any":undefined,value:d[k],onChange:e=>u(k,e.target.value)}));
+        })
+      ),
+      h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end",marginTop:14}},
+        h("button",{className:"btn btn-s",onClick:close},"Отмена"),
+        h("button",{className:"btn btn-p",disabled:!ok,onClick:()=>onSave(d)},"Добавить")
+      )
+    )
+  );
 }
 
-// ─── RENDER ──────────────────────────────────────────────
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+function NewM({close,save}){
+  const [d,sd]=useState({nm:"",fac:"Boulangerie Maison",sup:"EuroDistrib GmbH",resp:"",cur:"EUR",rate:"530.40",pP:"",pS:"",pA:"",inc:"FCA",tr:"Авторефрижератор"});
+  const u=(k,v)=>sd(p=>({...p,[k]:v}));
+  return h("div",{className:"modal-bg",onClick:close},
+    h("div",{className:"modal-box",onClick:e=>e.stopPropagation()},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},h("h2",{className:"fd",style:{fontSize:20}},"Новая поставка"),h("button",{style:{background:"none",border:"none",fontSize:20,color:"var(--muted)",cursor:"pointer"},onClick:close},"✕")),
+      h("div",{style:{marginBottom:12}},h(Lb,null,"Название"),h("input",{className:"inp",value:d.nm,onChange:e=>u("nm",e.target.value),placeholder:"Круассаны — Апрель 2026"})),
+      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Завод"),h("input",{className:"inp",value:d.fac,onChange:e=>u("fac",e.target.value)})),
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Поставщик"),h("input",{className:"inp",value:d.sup,onChange:e=>u("sup",e.target.value)}))
+      ),
+      h("div",{style:{marginBottom:12}},h(Lb,null,"Ответственный"),h("input",{className:"inp",value:d.resp,onChange:e=>u("resp",e.target.value)})),
+      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Закуп"),h("input",{className:"inp",type:"date",value:d.pP,onChange:e=>u("pP",e.target.value)})),
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Отгрузка"),h("input",{className:"inp",type:"date",value:d.pS,onChange:e=>u("pS",e.target.value)})),
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Прибытие"),h("input",{className:"inp",type:"date",value:d.pA,onChange:e=>u("pA",e.target.value)}))
+      ),
+      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Валюта"),h("select",{className:"inp",value:d.cur,onChange:e=>u("cur",e.target.value)},h("option",{value:"EUR"},"EUR"),h("option",{value:"USD"},"USD"))),
+        h("div",{style:{marginBottom:12}},h(Lb,null,"Курс"),h("input",{className:"inp",type:"number",value:d.rate,onChange:e=>u("rate",e.target.value)}))
+      ),
+      h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end",marginTop:14}},
+        h("button",{className:"btn btn-s",onClick:close},"Отмена"),
+        h("button",{className:"btn btn-p",disabled:!d.nm,onClick:()=>save(d)},"Создать")
+      )
+    )
+  );
+}
+
+// ─── SETTINGS ────────────────────────────────────────────
+function Sett({bk}){
+  return h("div",null,
+    h("div",{style:{cursor:"pointer",marginBottom:8,display:"flex",alignItems:"center",gap:8},onClick:bk},h("span",{style:{color:"var(--brown)",fontSize:16}},"←"),h("span",{style:{fontSize:13,color:"var(--brown)"}},"Назад")),
+    h("h1",{className:"fd",style:{fontSize:26,marginBottom:20}},"Настройки"),
+    h("div",{className:"card",style:{marginBottom:16,padding:"14px 16px",background:"#F6FAF0",border:"1px solid #D4E8BF"}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}},
+        h("div",null,h("div",{style:{fontSize:13,fontWeight:600}},"💾 Данные в localStorage"),h("div",{style:{fontSize:11,color:"var(--muted)",marginTop:2}},"Сохраняются автоматически")),
+        h("button",{className:"btn btn-d",onClick:()=>{if(confirm("Сбросить все данные?")){localStorage.removeItem("ic2");location.reload()}}},"🗑 Сбросить")
+      )
+    ),
+    h("div",{className:"card"},
+      h("h3",{className:"fd",style:{fontSize:18,marginBottom:14}},"Формулы"),
+      [["Себестоимость","закуп × курс + логист. + тамож. + склад"],["Валовая прибыль","выручка − себестоимость"],["Чистая прибыль","валовая − возвраты − списания"],["Break-even","себестоимость × 1.05"],["Sell-through","продано / (остаток + продано)"]].map(([n,f],i)=>
+        h("div",{key:i,style:{display:"flex",gap:8,padding:"6px 9px",background:i%2===0?"#FEFCF6":"#FFFDF7",borderRadius:5,fontSize:12,marginBottom:2}},
+          h("span",{style:{color:"var(--brown)",fontWeight:600,minWidth:130}},n),
+          h("span",{style:{fontFamily:"monospace",fontSize:11}},f)
+        )
+      )
+    )
+  );
+}
+
+// ─── MOUNT ───────────────────────────────────────────────
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 </script>
 </body>
 </html>
