@@ -51,23 +51,23 @@ table{border-spacing:0}
 <body>
 <div id="root"><div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'DM Sans',sans-serif"><div style="text-align:center"><div style="font-size:48px;margin-bottom:16px">🥐</div><div style="font-size:18px;color:#3D2E0A;font-family:'DM Serif Display',serif">Import Control</div><div style="font-size:13px;color:#A0936F;margin-top:8px">Загрузка платформы...</div></div></div></div>
 
-<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone@7.24.0/babel.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 <script>
-// Fallback if Recharts didn't load
-if(typeof Recharts==='undefined'){
-  window.Recharts={BarChart:function(){return null},Bar:function(){return null},XAxis:function(){return null},YAxis:function(){return null},Tooltip:function(){return null},ResponsiveContainer:function(p){return p.children||null},PieChart:function(){return null},Pie:function(){return null},Cell:function(){return null},CartesianGrid:function(){return null},Legend:function(){return null}};
-}
-// Global error handler
 window.onerror=function(msg,url,line,col,err){
   var root=document.getElementById('root');
-  if(root)root.innerHTML='<div style="padding:40px;text-align:center;font-family:DM Sans,sans-serif"><h2 style="color:#B94A3F">Ошибка загрузки</h2><p style="color:#A0936F;margin:10px 0">'+msg+'</p><p style="font-size:12px;color:#8B7A5E">Line: '+line+'</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;background:#D4A843;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">Перезагрузить</button></div>';
+  if(root)root.innerHTML='<div style="padding:40px;text-align:center;font-family:DM Sans,sans-serif"><h2 style="color:#B94A3F">Ошибка</h2><p style="color:#A0936F;margin:10px 0">'+msg+'</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;background:#D4A843;color:#fff;border:none;border-radius:8px;cursor:pointer">Перезагрузить</button></div>';
 };
 </script>
-
-<script type="text/babel">
+<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script>
+(function(){
+"use strict";
+// Fallback if Recharts didn't load
+if(typeof Recharts==='undefined'){
+  window.Recharts={BarChart:function(){return null},Bar:function(){return null},XAxis:function(){return null},YAxis:function(){return null},Tooltip:function(){return null},ResponsiveContainer:function(p){return(p&&p.children)||null},PieChart:function(){return null},Pie:function(){return null},Cell:function(){return null},CartesianGrid:function(){return null},Legend:function(){return null}};
+}
+var React=window.React;var ReactDOM=window.ReactDOM;var Recharts=window.Recharts;
 const {useState,useEffect,useMemo,useCallback}=React;
 const {BarChart,Bar:RBar,XAxis,YAxis,Tooltip,ResponsiveContainer,PieChart,Pie,Cell,CartesianGrid,Legend}=Recharts;
 
@@ -621,6 +621,7 @@ function Sett({bk}){
 
 // ─── MOUNT ───────────────────────────────────────────────
 ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
 </script>
 </body>
 </html>
